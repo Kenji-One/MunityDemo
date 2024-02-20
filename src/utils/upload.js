@@ -66,14 +66,14 @@ export async function uploadFileToS3(file, existingUrl = null) {
 
   // console.log("filecontent", fileContent);
   // Scan the buffer with clamscan
-  const { isInfected, viruses } = clamscan.isInfected(file.filepath);
-  // console.log("heloooooooo", isInfected, viruses);
+  // const { isInfected, viruses } = clamscan.isInfected(file.filepath);
+  // // console.log("heloooooooo", isInfected, viruses);
 
-  if (isInfected) {
-    console.error(`The file is infected with ${viruses}`);
-    // Handle the infected file (delete it, log it, etc.)
-    throw new Error(`The file is infected with ${viruses}`);
-  }
+  // if (isInfected) {
+  //   console.error(`The file is infected with ${viruses}`);
+  //   // Handle the infected file (delete it, log it, etc.)
+  //   throw new Error(`The file is infected with ${viruses}`);
+  // }
   const s3Client = new S3Client({
     region: process.env.AWS_REGION,
     credentials: {
