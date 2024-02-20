@@ -919,7 +919,32 @@ export const Web3ContextProvider = ({ children }) => {
     } finally {
     }
   };
+  // get members count
+  const getCommunityJoinedMembers = async (communityId, chainId) => {
+    if (Number(communityId) == 0) return [];
 
+    try {
+      const response = await Moralis.EvmApi.nft.getNFTTokenIdOwners({
+        chain: availableChains[chainId].chainHex,
+        format: "decimal",
+        address: MUNITY_CONFIG[chainId].address,
+        tokenId: communityId,
+        normalizeMetadata: false,
+        mediaItems: false,
+      });
+
+      // console.log("getCommunityJoinedMembers", response?.hasNext());
+      // const nextData = await response?.next();
+      // console.log("getCommunityJoinedMembers nextData", nextData);
+      const data = response?.jsonResponse;
+      console.log("getCommunityJoinedMembers", { communityId, ...data });
+
+      return { communityId, ...data };
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
   useEffect(() => {
     // getAllRegisteredCommunities()
   }, [chainId]);
@@ -971,6 +996,7 @@ export const Web3ContextProvider = ({ children }) => {
       allCommunitiesMainLoading,
       getAllRegisteredCommunities,
       //======= WRITE FUNCTIONS =====
+      getCommunityJoinedMembers,
       registerCommunityLoading,
       setRegisterCommunityLoading,
       registerCommunity,
@@ -1014,6 +1040,7 @@ export const Web3ContextProvider = ({ children }) => {
       allCommunitiesMainLoading,
       getAllRegisteredCommunities,
       //======= WRITE FUNCTIONS =====
+      getCommunityJoinedMembers,
       registerCommunity,
       getCommunityNftPayAmount,
       buyCommunityNft,

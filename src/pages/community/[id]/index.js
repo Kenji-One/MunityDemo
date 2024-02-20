@@ -32,8 +32,13 @@ const dummyData = {
 };
 
 const SingleCommunityPage = () => {
-  const { getCommunityDetailsById, getUserCommunityBalance, address, chainId } =
-    useWeb3Context();
+  const {
+    getCommunityDetailsById,
+    getCommunityJoinedMembers,
+    getUserCommunityBalance,
+    address,
+    chainId,
+  } = useWeb3Context();
 
   const [backendcommunityData, setBackendCommunityData] = useState(null);
   const [currentId, setCurrentId] = useState(null);
@@ -92,6 +97,11 @@ const SingleCommunityPage = () => {
           ? formatDate(dataBackend.createdAt)
           : formatDate(new Date());
         if (data2 !== null) {
+          const joinedUsers = await getCommunityJoinedMembers(
+            currentId,
+            data2.chainId
+          );
+
           const communityData = {
             communityId: currentId,
             name: data2
@@ -107,7 +117,7 @@ const SingleCommunityPage = () => {
             community_avatar: data2.communityData?.avatarImage,
             communityIMG: data2.communityData?.image,
             communityIMGBanner: data2.communityData?.bannerImage,
-            users: "12k+",
+            users: joinedUsers,
             by: data2 ? data2.creator : "ImanGadzhi",
             slotsLeft: data2 ? data2.supply : null,
             isVerified: dataBackend.is_verified,
