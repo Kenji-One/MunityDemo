@@ -319,7 +319,7 @@ export default function UserProfile({
                 lineHeight: "142.857%",
               }}
             >
-              {communityData?.category} Dummy
+              {communityData?.category}
             </Typography>
             <Typography
               fontSize="14px"
@@ -327,7 +327,7 @@ export default function UserProfile({
                 lineHeight: "142.857%",
               }}
             >
-              {communityData?.users} Dummy
+              {communityDataContract?.users}
             </Typography>
             <Typography
               fontSize="14px"

@@ -101,7 +101,7 @@ const SingleCommunityPage = () => {
             currentId,
             data2.chainId
           );
-
+          console.log("joined users:", joinedUsers);
           const communityData = {
             communityId: currentId,
             name: data2
@@ -117,7 +117,7 @@ const SingleCommunityPage = () => {
             community_avatar: data2.communityData?.avatarImage,
             communityIMG: data2.communityData?.image,
             communityIMGBanner: data2.communityData?.bannerImage,
-            users: joinedUsers,
+            users: joinedUsers ? joinedUsers.result.length : "--",
             by: data2 ? data2.creator : "ImanGadzhi",
             slotsLeft: data2 ? data2.supply : null,
             isVerified: dataBackend.is_verified,

@@ -68,6 +68,20 @@ export const Web3ContextProvider = ({ children }) => {
 
     initWeb3Modal();
   }, []);
+
+  const alertMessage = (message, type = 0) => {
+    if (type == 0) {
+      message = "Default : " + message;
+    } else if (type == 1) {
+      message = "Success : " + message;
+    } else if (type == 2) {
+      message = "Error : " + message;
+    } else if (type == 3) {
+      message = "Warn : " + message;
+    }
+    alert(message);
+  };
+
   const hasCachedProvider = useCallback(() => {
     if (!web3Modal) return false;
     UAuthWeb3Modal.registerWeb3Modal(web3Modal);
@@ -155,74 +169,92 @@ export const Web3ContextProvider = ({ children }) => {
     }
   }, []);
 
-  const connect = useCallback(async () => {
-    const targetChain = ChainIds.Ethereum;
-    // console.log("before:", targetChain);
-    if (!Object.keys(availableChains).includes("" + targetChain)) {
-      web3Modal.clearCachedProvider();
-      const switched = await switchChain(ChainIds.Ethereum);
-      if (!switched) {
-        console.error(
-          "Unable to connect. Please change network using provider.1"
-        );
+  const connect = useCallback(
+    async (_targetChain) => {
+      // const currentChainId = Number(getLocalItem("connected_chain"))
+      const targetChain = _targetChain ? _targetChain : ChainIds.Ethereum;
+      // console.log("_targetChain before:", _targetChain,"currentChainId",currentChainId);
+      console.log("targetChain before:", targetChain);
+      // console.log("before:", targetChain);
+      if (!Object.keys(availableChains).includes("" + targetChain)) {
+        web3Modal.clearCachedProvider();
+        const switched = await switchChain(ChainIds.Ethereum);
+        if (!switched) {
+          console.error(
+            "Unable to connect. Please change network using provider.1"
+          );
+          return;
+        }
+      }
+
+      let rawProvider;
+      try {
+        rawProvider = await web3Modal.connect();
+      } catch (error) {
         return;
       }
-    }
 
-    let rawProvider = await web3Modal.connect();
-
-    _initListeners(rawProvider);
-    let connectedProvider = new BrowserProvider(rawProvider, "any");
-    let connectedChainId = await connectedProvider
-      .getNetwork()
-      .then((network) =>
-        typeof network.chainId === "number"
-          ? network.chainId
-          : parseInt(network.chainId)
-      );
-    // console.log(
-    //   "connectedChainId:",
-    //   connectedChainId,
-    //   "targetChain:",
-    //   targetChain
-    // );
-    if (connectedChainId !== targetChain) {
-      web3Modal.clearCachedProvider();
-      const switched = await switchChain(targetChain);
-      if (!switched) {
-        console.error(
-          "Unable to connect. Please change network using provider.2"
+      _initListeners(rawProvider);
+      let connectedProvider = new BrowserProvider(rawProvider, "any");
+      let connectedChainId = await connectedProvider
+        .getNetwork()
+        .then((network) =>
+          typeof network.chainId === "number"
+            ? network.chainId
+            : parseInt(network.chainId)
         );
+      // console.log(
+      //   "connectedChainId:",
+      //   connectedChainId,
+      //   "targetChain:",
+      //   targetChain
+      // );
+      if (connectedChainId !== targetChain) {
+        web3Modal.clearCachedProvider();
+        const switched = await switchChain(targetChain);
+        if (!switched) {
+          console.error(
+            "Unable to connect. Please change network using provider.2"
+          );
+          return;
+        }
+      }
+
+      try {
+        rawProvider = await web3Modal.connect();
+      } catch (error) {
         return;
       }
-    }
 
-    rawProvider = await web3Modal.connect();
+      _initListeners(rawProvider);
+      connectedProvider = new BrowserProvider(rawProvider, "any");
+      connectedChainId = await connectedProvider
+        .getNetwork()
+        .then((network) =>
+          typeof network.chainId === "number"
+            ? network.chainId
+            : parseInt(network.chainId)
+        );
 
-    _initListeners(rawProvider);
-    connectedProvider = new BrowserProvider(rawProvider, "any");
-    connectedChainId = await connectedProvider
-      .getNetwork()
-      .then((network) =>
-        typeof network.chainId === "number"
-          ? network.chainId
-          : parseInt(network.chainId)
-      );
+      const connectedAddress = await (
+        await connectedProvider.getSigner()
+      ).getAddress();
 
-    const connectedAddress = await (
-      await connectedProvider.getSigner()
-    ).getAddress();
+      setChainId(connectedChainId);
+      setAddress(connectedAddress);
+      setProvider(connectedProvider);
+      setConnected(true);
+      setLocalItem("connected_chain", connectedChainId);
+      setLocalItem("connected_address", connectedAddress);
+      setLocalItem("connected_state", true);
 
-    setChainId(connectedChainId);
-    setAddress(connectedAddress);
-    setProvider(connectedProvider);
-    setConnected(true);
-    setLocalItem("connected_chain", connectedChainId);
-    setLocalItem("connected_address", connectedAddress);
-    setLocalItem("connected_state", true);
-
-    return { connectedProvider: connectedProvider, address: connectedAddress };
-  }, [_initListeners, switchChain]);
+      return {
+        connectedProvider: connectedProvider,
+        address: connectedAddress,
+      };
+    },
+    [_initListeners, switchChain]
+  );
 
   useEffect(() => {
     if (web3Modal && getLocalItem("connected_state")) {
@@ -231,19 +263,6 @@ export const Web3ContextProvider = ({ children }) => {
   }, [connect, web3Modal]);
 
   //========================== CONTRACT =========================
-
-  const alertMessage = (message, type = 0) => {
-    if (type == 0) {
-      message = "Default : " + message;
-    } else if (type == 1) {
-      message = "Success : " + message;
-    } else if (type == 2) {
-      message = "Error : " + message;
-    } else if (type == 3) {
-      message = "Warn : " + message;
-    }
-    alert(message);
-  };
 
   function isBoolean(param) {
     return typeof param === "boolean";
@@ -519,6 +538,10 @@ export const Web3ContextProvider = ({ children }) => {
       for (let _id = 1; _id <= Number(total); _id++) {
         const data = await getCommunityDetailsById(_id);
         if (data) {
+          const joinedUsers = await getCommunityJoinedMembers(
+            _id,
+            data.chainId
+          );
           allCommunityData.push({
             _id,
             title: data?.communityData ? data?.communityData?.name : null,
@@ -526,7 +549,7 @@ export const Web3ContextProvider = ({ children }) => {
             community_avatar: data?.communityData?.avatarImage
               ? data?.communityData?.avatarImage
               : "/images/community01.png",
-            users: "12k+",
+            users: joinedUsers ? joinedUsers.result.length : "--",
             slotsLeft: data?.supply ?? "0",
             url: `community/${_id}`,
           });
@@ -919,7 +942,7 @@ export const Web3ContextProvider = ({ children }) => {
     } finally {
     }
   };
-  // get members count
+
   const getCommunityJoinedMembers = async (communityId, chainId) => {
     if (Number(communityId) == 0) return [];
 
@@ -945,6 +968,7 @@ export const Web3ContextProvider = ({ children }) => {
       return null;
     }
   };
+
   useEffect(() => {
     // getAllRegisteredCommunities()
   }, [chainId]);
@@ -1012,6 +1036,7 @@ export const Web3ContextProvider = ({ children }) => {
       setApprovalForAll,
       getUserTotalCommunitiesRegistered,
       alertMessage,
+      getCommunityJoinedMembers,
     }),
     [
       connect,
@@ -1054,6 +1079,7 @@ export const Web3ContextProvider = ({ children }) => {
       setApprovalForAll,
       getUserTotalCommunitiesRegistered,
       alertMessage,
+      getCommunityJoinedMembers,
     ]
   );
 

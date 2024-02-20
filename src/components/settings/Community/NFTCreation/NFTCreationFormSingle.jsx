@@ -235,8 +235,8 @@ const NFTCreationFormSingle = ({
     if (isExecuted) {
       await refetchData();
       setNewPrice(0);
-      setLoading(false);
     }
+    setLoading(false);
     setnewPriceChangeLoading(false);
   };
 
@@ -258,8 +258,8 @@ const NFTCreationFormSingle = ({
     if (isExecuted) {
       await refetchData();
       setNewSupply(0);
-      setLoading(false);
     }
+    setLoading(false);
     setnewSupplyChangeLoading(false);
   };
 
@@ -288,8 +288,8 @@ const NFTCreationFormSingle = ({
     if (isExecuted) {
       await refetchData();
       setNewDiscount(0);
-      setLoading(false);
     }
+    setLoading(false);
     setnewDiscountChangeLoading(false);
   };
 
