@@ -212,6 +212,7 @@ export default function SettingsNav({
               <PageTitle title={"CREATE COMMUNITY"} />
               <NFTCreationForm
                 theme={theme}
+                refetchData={refetchData}
                 onSave={handleSubmit}
                 creatingCommunity={true}
                 setLoading={setLoading}

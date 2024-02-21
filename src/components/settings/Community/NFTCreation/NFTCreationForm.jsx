@@ -26,6 +26,7 @@ import Hero from "@/components/main/Hero";
 const NFTCreationForm = ({
   onSave,
   selectedImage,
+  refetchData,
   editedData,
   theme,
   onCloseModal,
@@ -208,6 +209,7 @@ const NFTCreationForm = ({
         setRegisterCommunityLoading(false);
         setLoading(false);
       }
+      await refetchData();
       await getUserTotalCommunitiesRegistered();
     }
   };
