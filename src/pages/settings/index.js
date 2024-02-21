@@ -63,7 +63,7 @@ export default function Settings() {
     const method = id ? "PUT" : "POST";
     const endpoint = id ? `/api/communities/${id}` : "/api/communities";
     // Prepare headers based on whether FormData is being sent
-    const headers = hasFiles ? {} : { "Content-Type": "application/json" };
+    const headers = { "Content-Type": "application/json" };
     // console.log("headers:", headers, "endpoint", endpoint, "method", method);
     try {
       const response = await fetch(endpoint, {

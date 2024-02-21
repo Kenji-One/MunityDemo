@@ -55,27 +55,34 @@ export const getCommunityByContractId = async (req, res) => {
 // createCommunity controller function
 export const createCommunity = async (req, res) => {
   try {
-    const { fields, files } = await parseForm(req);
+    // const { fields, files } = await parseForm(req);
     // console.log("files:", files);
+    let fields;
+    // For JSON payload, parse the body manually
+    fields = await new Promise((resolve) => {
+      let rawData = "";
+      req.on("data", (chunk) => (rawData += chunk));
+      req.on("end", () => resolve(JSON.parse(rawData)));
+    });
 
-    const avatarUrl = files.community_avatar
-      ? await uploadFileToS3(files.community_avatar[0])
-      : null;
-    const bannerUrl = files.community_banner
-      ? await uploadFileToS3(files.community_banner[0])
-      : null;
-    const keyImageUrl = files.image
-      ? await uploadFileToS3(files.image[0])
-      : null;
+    // const avatarUrl = files.community_avatar
+    //   ? await uploadFileToS3(files.community_avatar[0])
+    //   : null;
+    // const bannerUrl = files.community_banner
+    //   ? await uploadFileToS3(files.community_banner[0])
+    //   : null;
+    // const keyImageUrl = files.image
+    //   ? await uploadFileToS3(files.image[0])
+    //   : null;
     // console.log("avatarUrl:", avatarUrl);
     // Construct the community data including file URLs
 
     const communityData = {
       ...fields,
       user_id: fields.user_id,
-      community_avatar: avatarUrl,
-      community_banner: bannerUrl,
-      key: { image: keyImageUrl },
+      // community_avatar: avatarUrl,
+      // community_banner: bannerUrl,
+      // key: { image: keyImageUrl },
     };
     const { error } = CommunityValidationSchema.validate(communityData);
     if (error) {
@@ -84,7 +91,7 @@ export const createCommunity = async (req, res) => {
     // Create and save the new community
     const newCommunity = new Community(communityData);
     await newCommunity.save();
-    cleanUpLocalFiles(files);
+    // cleanUpLocalFiles(files);
     res.status(201).json({ success: true, data: newCommunity });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
