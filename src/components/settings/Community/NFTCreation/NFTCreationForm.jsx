@@ -153,61 +153,56 @@ const NFTCreationForm = ({
     const excutedData = await registerCommunity(formData);
     console.log("isExecuted:", excutedData);
     if (excutedData.isExecuted) {
-      const hasFiles = [
-        formData.community_nft_image,
-        formData.community_avatar,
-        formData.community_banner,
-      ].some((item) => item instanceof File);
+      // const hasFiles = [
+      //   formData.community_nft_image,
+      //   formData.community_avatar,
+      //   formData.community_banner,
+      // ].some((item) => item instanceof File);
       let payload;
       // Convert formData to a FormData object for file handling
-      if (hasFiles) {
-        //   // Use FormData for multipart request
-        //   payload = new FormData();
-        //   payload.append("name", formData.name);
-        //   payload.append("description", formData.description);
-        //   payload.append("key_quantity", formData.key_quantity);
-        //   payload.append("minting_price", formData.minting_price);
-        //   payload.append("discount", formData.discount);
-        //   payload.append("have_whitelist", formData.have_whitelist);
-        //   payload.append("uri", formData.uri);
+      // if (hasFiles) {
+      //   // Use FormData for multipart request
+      //   payload = new FormData();
+      //   payload.append("name", formData.name);
+      //   payload.append("description", formData.description);
+      //   payload.append("key_quantity", formData.key_quantity);
+      //   payload.append("minting_price", formData.minting_price);
+      //   payload.append("discount", formData.discount);
+      //   payload.append("have_whitelist", formData.have_whitelist);
+      //   payload.append("uri", formData.uri);
 
-        //   // Append files only if they are File objects
-        //   if (formData.community_nft_image instanceof File) {
-        //     payload.append("image", formData.community_nft_image);
-        //   }
-        //   if (formData.community_avatar instanceof File) {
-        //     payload.append("community_avatar", formData.community_avatar);
-        //   }
-        //   if (formData.community_banner instanceof File) {
-        //     payload.append("community_banner", formData.community_banner);
-        //   }
-        // } else {
-        // Use JSON for regular request
-        payload = JSON.stringify({
-          name: formData.name,
-          description: formData.description,
-          key_quantity: formData.key_quantity,
-          minting_price: formData.minting_price,
-          discount: formData.discount,
-          have_whitelist: formData.have_whitelist,
-          uri: formData.uri,
-          // Include string paths for existing images
-          // image: formData.community_nft_image,
-          // community_avatar: formData.community_avatar,
-          // community_banner: formData.community_banner,
-        });
-      }
+      //   // Append files only if they are File objects
+      //   if (formData.community_nft_image instanceof File) {
+      //     payload.append("image", formData.community_nft_image);
+      //   }
+      //   if (formData.community_avatar instanceof File) {
+      //     payload.append("community_avatar", formData.community_avatar);
+      //   }
+      //   if (formData.community_banner instanceof File) {
+      //     payload.append("community_banner", formData.community_banner);
+      //   }
+      // } else {
+      // Use JSON for regular request
+      payload = JSON.stringify({
+        name: formData.name,
+        description: formData.description,
+        key_quantity: formData.key_quantity,
+        minting_price: formData.minting_price,
+        discount: formData.discount,
+        have_whitelist: formData.have_whitelist,
+        uri: formData.uri,
+        contract_community_id: excutedData?.contract_community_id || "1",
+        user_id: userData?._id,
+        // Include string paths for existing images
+        // image: formData.community_nft_image,
+        // community_avatar: formData.community_avatar,
+        // community_banner: formData.community_banner,
+      });
+      // }
       if (editedData) {
         // Call update function (make sure it can handle both FormData and JSON payloads)
         onSave(payload, editedData._id, hasFiles);
       } else {
-        payload.append(
-          "contract_community_id",
-          excutedData?.contract_community_id || "1"
-        );
-        payload.append("user_id", userData?._id);
-        // console.log("formdata:", formData);
-
         // Call create function
         await onSave(payload, null, hasFiles);
         setRegisterCommunityLoading(false);
