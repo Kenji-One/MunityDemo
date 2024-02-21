@@ -201,10 +201,10 @@ const NFTCreationForm = ({
       // }
       if (editedData) {
         // Call update function (make sure it can handle both FormData and JSON payloads)
-        onSave(payload, editedData._id, hasFiles);
+        onSave(payload, editedData._id, null);
       } else {
         // Call create function
-        await onSave(payload, null, hasFiles);
+        await onSave(payload, null, null);
         setRegisterCommunityLoading(false);
         setLoading(false);
       }
