@@ -976,6 +976,8 @@ export const Web3ContextProvider = ({ children }) => {
   useEffect(() => {
     if (address !== "" && chainId !== "") {
       getUserTotalCommunitiesRegistered(address);
+    }else{
+      setAddressCommunitiesData([])
     }
   }, [address, chainId]);
 

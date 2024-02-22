@@ -210,7 +210,7 @@ const NFTCreationForm = ({
         setLoading(false);
       }
       await refetchData();
-      await getUserTotalCommunitiesRegistered();
+      // await getUserTotalCommunitiesRegistered();
     }
   };
 

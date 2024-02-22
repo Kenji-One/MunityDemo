@@ -13,7 +13,6 @@ export default function Settings() {
   const {
     address,
     connected,
-    registerCommunity,
     registerCommunityLoading,
     buyCommunityNft,
     addressCommunitiesData,
