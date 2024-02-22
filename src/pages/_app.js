@@ -6,16 +6,19 @@ import { Provider } from "react-redux";
 import { store } from "../utils/store";
 import { Web3ContextProvider } from "../utils";
 import App from "@/components/layout/App";
+import RainbowKitWagmiContextProvider from "@/context/RinbowkitWagmiContext";
 
 const MyApp = ({ Component, pageProps }) => {
   return (
+    <RainbowKitWagmiContextProvider>
       <Web3ContextProvider>
-    <Provider store={store}>
-        <App>
-          <Component {...pageProps} />
-        </App>
-    </Provider>
+        <Provider store={store}>
+          <App>
+            <Component {...pageProps} />
+          </App>
+        </Provider>
       </Web3ContextProvider>
+    </RainbowKitWagmiContextProvider>
   );
 };
 

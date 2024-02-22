@@ -30,6 +30,8 @@ import { addressEllipsis, availableChains, useWeb3Context } from "@/utils";
 import { setMode, setTheme, setUserAddress } from "../../utils/store/reducers";
 import styles from "./header.module.scss";
 import ClearIcon from "../settings/ClearIcon";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 
 export default function Header() {
   const router = useRouter();
@@ -447,6 +449,7 @@ export default function Header() {
             onChange={handleSelect}
           />
         )}
+        {/* <ConnectButton/> */}
         <Tooltip title={`${connected ? "Profile" : ""}`}>
           <Box
             className={`min-w-fit text-white ${
