@@ -20,6 +20,7 @@ import {
   uploadJSONToIPFS,
 } from "../pinata/tools";
 import Moralis from "moralis";
+import { useAccount, useChainId } from "wagmi";
 
 export const MORALISSDK = Moralis.start({
   apiKey: "j5AxAJv5eBBEU0n4S4IkoOX4lOO3q8dG813cRvRXijb1GVjPSMp4t2EL3c48v9vU",
@@ -46,12 +47,46 @@ export const useWeb3Context = () => {
 };
 
 export const Web3ContextProvider = ({ children }) => {
+
+  const {address:connectedWallet} = useAccount()
+  // const {chain:connectedChainId} = useChainId()
+  const connectedChainId = useChainId()
+
   const [connected, setConnected] = useState(false);
   const [chainId, setChainId] = useState("");
   const [address, setAddress] = useState("");
   const [addressCommunitiesData, setAddressCommunitiesData] = useState([]);
   const [provider, setProvider] = useState(null);
   const [web3Modal, setWeb3Modal] = useState(null);
+
+
+  useEffect(() => {
+    console.log("connectedWallet",connectedWallet)
+    if (connectedWallet){
+      setAddress(connectedWallet)
+      setConnected(true)
+      setLocalItem("connected_address", connectedWallet);
+      setLocalItem("connected_state", true);
+      
+    }else{
+      setConnected(false)
+      setAddress("")
+      clearLocalItems()
+    }
+  }, [connectedWallet]);
+
+  useEffect(() => {
+    console.log("connectedChainId",connectedChainId)
+    if (connectedChainId){
+      setChainId(connectedChainId)
+      setLocalItem("connected_chain", connectedChainId);
+
+    }else{
+      setChainId("")
+    }
+  }, [connectedChainId]);
+
+
   useEffect(() => {
     const initWeb3Modal = async () => {
       const Web3Modal = (await import("web3modal")).default;
@@ -524,45 +559,53 @@ export const Web3ContextProvider = ({ children }) => {
     useState(false);
   const [allCommunitiesMain, setAllCommunitiesMain] = useState([]);
   const getAllRegisteredCommunities = async () => {
-    setAllCommunitiesMainLoading(true);
 
-    const contract = await getMunityContractToRead();
-    // console.log("allCommunityData here",{contract});
-    if (contract) {
-      const total = await getTotalCommunitiesRegistered();
-      if (!total) {
-        return [];
-      }
+    try{
 
-      let allCommunityData = [];
-      for (let _id = 1; _id <= Number(total); _id++) {
-        const data = await getCommunityDetailsById(_id);
-        if (data) {
-          const joinedUsers = await getCommunityJoinedMembers(
-            _id,
-            data.chainId
-          );
-          allCommunityData.push({
-            _id,
-            title: data?.communityData ? data?.communityData?.name : null,
-            // communityIMG: data?.communityData
-            community_avatar: data?.communityData?.avatarImage
-              ? data?.communityData?.avatarImage
-              : "/images/community01.png",
-            users: joinedUsers ? joinedUsers.result.length : "--",
-            slotsLeft: data?.supply ?? "0",
-            url: `community/${_id}`,
-          });
+      setAllCommunitiesMainLoading(true);
+      const contract = await getMunityContractToRead();
+      // console.log("allCommunityData here",{contract});
+      if (contract) {
+        const total = await getTotalCommunitiesRegistered();
+        console.log("getTotalCommunitiesRegistered",total)
+  
+        let allCommunityData = [];
+        for (let _id = 1; _id <= Number(total); _id++) {
+          const data = await getCommunityDetailsById(_id);
+          if (data) {
+            const joinedUsers = await getCommunityJoinedMembers(
+              _id,
+              data.chainId
+            );
+            allCommunityData.push({
+              _id,
+              title: data?.communityData ? data?.communityData?.name : null,
+              // communityIMG: data?.communityData
+              community_avatar: data?.communityData?.avatarImage
+                ? data?.communityData?.avatarImage
+                : "/images/community01.png",
+              users: joinedUsers ? joinedUsers.result.length : "--",
+              slotsLeft: data?.supply ?? "0",
+              url: `community/${_id}`,
+            });
+          }
         }
+  
+        console.log("allCommunityData", allCommunityData);
+        setAllCommunitiesMain(allCommunityData);
+        setAllCommunitiesMainLoading(false);
+      } else {
+        setAllCommunitiesMainLoading(false);
+        setAllCommunitiesMain([]);
       }
-
-      console.log("allCommunityData", allCommunityData);
-      setAllCommunitiesMain(allCommunityData);
-      setAllCommunitiesMainLoading(false);
-    } else {
-      setAllCommunitiesMainLoading(false);
+    }catch(error){
       setAllCommunitiesMain([]);
+      
+    }finally{
+      
+      setAllCommunitiesMainLoading(false);
     }
+
   };
 
   //================== WRITES =============================
@@ -970,7 +1013,9 @@ export const Web3ContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // getAllRegisteredCommunities()
+    if (chainId != "") {
+      getAllRegisteredCommunities();
+    }
   }, [chainId]);
 
   useEffect(() => {
@@ -996,15 +1041,15 @@ export const Web3ContextProvider = ({ children }) => {
 
   const onChainProvider = useMemo(
     () => ({
-      connect,
-      disconnect,
-      provider,
       connected,
       address,
       chainId,
-      web3Modal,
-      hasCachedProvider,
-      switchChain,
+      // connect,
+      // disconnect,
+      // provider,
+      // web3Modal,
+      // hasCachedProvider,
+      // switchChain,
       //======= READ FUNCTIONS =====
       addressCommunitiesData,
       contractState,
@@ -1041,15 +1086,15 @@ export const Web3ContextProvider = ({ children }) => {
       getCommunityJoinedMembers,
     }),
     [
-      connect,
-      disconnect,
-      provider,
       connected,
       address,
       chainId,
-      web3Modal,
-      hasCachedProvider,
-      switchChain,
+      // connect,
+      // disconnect,
+      // provider,
+      // web3Modal,
+      // hasCachedProvider,
+      // switchChain,
       //======= READ FUNCTIONS =====
       addressCommunitiesData,
       contractState,
@@ -1068,6 +1113,8 @@ export const Web3ContextProvider = ({ children }) => {
       getAllRegisteredCommunities,
       //======= WRITE FUNCTIONS =====
       getCommunityJoinedMembers,
+      registerCommunityLoading,
+      setRegisterCommunityLoading,
       registerCommunity,
       getCommunityNftPayAmount,
       buyCommunityNft,

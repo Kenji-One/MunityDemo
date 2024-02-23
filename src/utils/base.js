@@ -1,11 +1,13 @@
-export const addressEllipsis = (address, length = 4) => {
-  if (!address) return "";
-  if (!address.startsWith("0x")) address = "0x" + address;
+export const addressEllipsis = (address, length = 5) => {
+  // console.log("addressEllipsis",address)
+  if (!address || address == "" || address.length < length) {
+    return address;
+  }
 
-  if (address.length <= length * 2 + 2) return address;
-  return `${address.slice(0, length + 2)}...${address.slice(
-    address.length - length
-  )}`;
+  const start = address.slice(0, length);
+  const end = address.slice(-length);
+
+  return `${start}...${end}`;
 };
 
 export const getLocalItem = (key, defaultValue, isJson = false) => {

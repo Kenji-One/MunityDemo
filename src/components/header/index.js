@@ -26,14 +26,28 @@ import AccountBoxSharpIcon from "@mui/icons-material/AccountBoxSharp";
 import DarkModeSharpIcon from "@mui/icons-material/DarkModeSharp";
 import MenuSharpIcon from "@mui/icons-material/MenuSharp";
 import { CustomToggleButton } from "../toggle";
-import { addressEllipsis, availableChains, useWeb3Context } from "@/utils";
+import { ChainIds, addressEllipsis, availableChains, useWeb3Context } from "@/utils";
 import { setMode, setTheme, setUserAddress } from "../../utils/store/reducers";
 import styles from "./header.module.scss";
 import ClearIcon from "../settings/ClearIcon";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
+import {
+  useConnectModal,
+  useAccountModal,
+  useChainModal,
+} from '@rainbow-me/rainbowkit';
+import { useDisconnect, useSwitchChain } from 'wagmi'
 
 export default function Header() {
+
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { openChainModal } = useChainModal(); 
+
+
+  const { disconnect:disconnectHandle } = useDisconnect()
+  const { chains, switchChainAsync:switchChainHandle } = useSwitchChain()
+  
   const router = useRouter();
   const dispatch = useDispatch();
   const pathname = router.pathname;
@@ -42,12 +56,21 @@ export default function Header() {
   const [userDatabaseAvatar, setUserDatabaseAvatar] = useState(
     "/images/profile.png"
   );
-  const { address, chainId, connected, connect, disconnect } = useWeb3Context();
+  const { address, chainId, connected } = useWeb3Context();
   const [selectedChain, setSelectedChain] = useState(`${chainId}`);
   const [openMenu, setOpenMenu] = useState(null);
   const svgFillColor = theme === "light" ? "#10111B" : "white";
   const txtColor = connected ? "primary.main" : "white";
-  useEffect(() => setSelectedChain(`${chainId}`), [chainId, connected]);
+  useEffect(() =>{
+    if(chainId!==""){
+
+      setSelectedChain(`${chainId}`)
+    }else{
+      setSelectedChain(`${ChainIds.Ethereum}`)
+
+    }
+    
+    }, [chainId, connected]);
   useEffect(() => {
     const getCurrentUserByAddress = async () => {
       try {
@@ -153,11 +176,18 @@ export default function Header() {
     if (connected) {
       setOpenMenu(e.currentTarget);
     } else {
-      const userAddress = await connect(+selectedChain);
+      openConnectModal()
+      // const userAddress = await connect(+selectedChain);
       // console.log("user address after connect:", userAddress.address);
+      
+    }
+  };
+
+  useEffect(() => {
+    if(address !== "" && connected) {
       const getCurrentUserByAddress = async () => {
         try {
-          const API_URL = `/api/users?address=${userAddress.address}`; // Adjust based on your API endpoint
+          const API_URL = `/api/users?address=${address}`; // Adjust based on your API endpoint
           const response = await fetch(API_URL);
           if (!response.ok) console.log("User not found");
           if (response.ok) console.log("User was found");
@@ -166,23 +196,31 @@ export default function Header() {
           console.error("Error fetching user:", error);
         }
       };
-      if (userAddress.address) {
+      if (address) {
         const userAlreadyExists = getCurrentUserByAddress();
         if (!userAlreadyExists) {
-          createUser(userAddress.address);
+          createUser(address);
         }
       }
     }
-  };
+    
+  }, [address]);
+  
 
   const handleSelect = async (newChain) => {
     if (!connected) {
       setSelectedChain(newChain);
       return;
     }
-
-    connect(+newChain);
     setSelectedChain(newChain);
+    try {
+      
+      await switchChainHandle({ chainId: +newChain })
+    } catch (error) {
+      
+      setSelectedChain(String(chainId));
+    }
+    // connect(+newChain);
   };
 
   const maticIcon = (
@@ -590,7 +628,7 @@ export default function Header() {
                   justifyContent: "left",
                 }}
                 onClick={() => {
-                  disconnect();
+                  disconnectHandle();
                   setOpenMenu(false);
                   router.push("/main");
                 }}

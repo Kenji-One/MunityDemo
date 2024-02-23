@@ -10,15 +10,15 @@ import RainbowKitWagmiContextProvider from "@/context/RinbowkitWagmiContext";
 
 const MyApp = ({ Component, pageProps }) => {
   return (
-    <RainbowKitWagmiContextProvider>
-      <Web3ContextProvider>
-        <Provider store={store}>
+    <Provider store={store}>
+      <RainbowKitWagmiContextProvider>
+        <Web3ContextProvider>
           <App>
             <Component {...pageProps} />
           </App>
-        </Provider>
-      </Web3ContextProvider>
-    </RainbowKitWagmiContextProvider>
+        </Web3ContextProvider>
+      </RainbowKitWagmiContextProvider>
+    </Provider>
   );
 };
 

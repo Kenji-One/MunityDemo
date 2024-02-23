@@ -16,7 +16,6 @@ export default function MainApp() {
   const [loading, setLoading] = useState(true);
 
   const {
-    getAllRegisteredCommunities,
     allCommunitiesMain,
     allCommunitiesMainLoading,
     chainId,
@@ -60,11 +59,7 @@ export default function MainApp() {
     // fetchCommunities();
   }, []);
 
-  useEffect(() => {
-    if (chainId != "") {
-      getAllRegisteredCommunities();
-    }
-  }, [chainId]);
+
 
   const communityData = {
     name: "Grow your Agency",
@@ -249,7 +244,7 @@ export default function MainApp() {
       url: "#",
     },
   ];
-
+// console.log("testttttttttttttttttt",{loading,allCommunitiesMainLoading})
   return (
     <Box className="mob:mb-[48px] tab:mb-[80px] lap:mb-[120px]">
       <Loader open={loading || allCommunitiesMainLoading} />
