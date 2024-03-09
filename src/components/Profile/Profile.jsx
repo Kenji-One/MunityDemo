@@ -61,31 +61,7 @@ export default function Profile({ userData, userCommunities }) {
       link: "https://twitter.com/",
     },
   ];
-  const userDummyData = {
-    name: "Iman Gadzhi",
-    address: "0x5970...B752",
-    joinedDate: "OCT 22",
-    about: [
-      "Lorem ipsum dolor sit amet consectetur. Hendrerit elit mauris morbi nunc. Felis hendrerit a purus leo erat eget lectus laoreet. In amet dolor duis mauris cursus tincidunt pellentesque lectus. Aliquam velit rhoncus eget dignissim integer. Semper lectus mattis penatibus libero feugiat felis volutpat et id. Leo tellus ut velit vehicula purus vitae turpis dignissim aliquam. Eu ut rhoncus non augue. Vitae metus mattis nulla velit leo sed at condimentum. Sodales ipsum donec sed vulputate erat enim maecenas mi. Viverra pharetra consectetur erat odio lectus commodo sagittis amet sit. Dui metus egestas libero fames congue morbi semper. Accumsan cursus in at massa. ",
-      " Sagittis maecenas arcu at vitae et egestas ut. Mauris venenatis fusce sed enim magna bibendum dignissim. Quam in sagittis ipsum sit in elementum. Turpis lorem nisl nec habitasse purus. Vitae sed et lacus sollicitudin magna interdum hendrerit facilisi enim. Feugiat hac odio accumsan libero. Non habitant egestas vulputate phasellus non urna. Mauris sed vulputate dolor commodo dolor dolor. Consectetur pellentesque feugiat urna odio nulla blandit. Morbi orci nunc leo risus. Pellentesque at feugiat pulvinar id ullamcorper sed. Nisl purus placerat est in turpis tortor morbi. Imperdiet nisl enim metus eu. Etiam orci ut a lacus mollis.",
-    ],
-    Communities: [
-      {
-        title: "Iman Gadzhi Community",
-        communityIMG: "/images/community01.png",
-        users: "12k+",
-        slotsLeft: "2,102",
-        url: "#",
-      },
-      {
-        title: "Grow your agency",
-        communityIMG: "/images/community02.png",
-        users: "12k+",
-        slotsLeft: "2,102",
-        url: "#",
-      },
-    ],
-  };
+
   return (
     <Box
       className={`mob:mx-4 tab:mx-6 mob:mx-4 tab:mx-6 lap:mx-8 desk:mx-[52px] z-10 mt-260 relative mb-[120px]`}
@@ -101,7 +77,7 @@ export default function Profile({ userData, userCommunities }) {
             }}
           >
             <img
-              src={userData.user_avatar}
+              src={userData.user_avatar || "/images/profile.png"}
               alt={userData.username}
               className="object-cover h-full"
             />
@@ -116,7 +92,9 @@ export default function Profile({ userData, userCommunities }) {
               },
             }}
           >
-            {userData.first_name + " " + userData.last_name}
+            {userData.first_name
+              ? userData.first_name + " " + (userData.last_name || "")
+              : userData.username}
             {userData.is_verified && (
               <VerifiedSharpIcon
                 sx={{
@@ -278,16 +256,16 @@ export default function Profile({ userData, userCommunities }) {
           {userCommunities ? (
             <Box className="grid mob:grid-cols-1 biggerTab:grid-cols-2 lap:grid-cols-1 bigDesk:grid-cols-2 gap-8 mt-8 h-full">
               {userCommunities.map(
-                ({ name, community_avatar, _id, is_verified }, index) => (
+                ({ communityData, supply, communityId }, index) => (
                   <div key={index}>
                     <SingleCommunity
-                      title={name}
-                      communityIMG={community_avatar}
-                      users={"12k"}
-                      verified={is_verified}
-                      slotsLeft={"95"}
+                      title={communityData.name}
+                      communityIMG={communityData.avatarImage}
+                      users={0}
+                      verified={false}
+                      slotsLeft={supply}
                       itemType={"community"}
-                      itemId={_id}
+                      itemId={communityId}
                     />
                   </div>
                 )

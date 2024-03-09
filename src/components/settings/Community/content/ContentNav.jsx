@@ -70,6 +70,7 @@ export default function ContentNav({
       <ContentTabs
         value={value}
         handleChange={handleChange}
+        type="settings"
         navTabs={navTabs}
         a11yProps={a11yProps}
         classNames={"border-b "}
@@ -77,31 +78,31 @@ export default function ContentNav({
 
       <CustomTabPanel value={value} index={0} className=" relative">
         <ContentsTop
-          title={"Merch (23 Items)"}
+          title={"Merch"}
           label={"Shopify Link"}
           placeholder={"e.g. hhtps://Shopify.com/yourlink"}
           featureKey={"merch"}
-          initialValue={creatorCommunityData.merch?.url}
+          initialValue={creatorCommunityData.merch}
           handleFeatureChange={handleUrlChange}
         />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1} className=" relative">
         <ContentsTop
           title={"Dao Proposals"}
-          label={"SNAPSHOT LINK"}
-          placeholder={"e.g. hhtps://snapshot.org/yourlink"}
+          label={"SNAPSHOT SPACE DOMAIN"}
+          placeholder={"e.x munity.eth"}
           featureKey={"dao_proposals"}
-          initialValue={creatorCommunityData.dao_proposals?.url}
+          initialValue={creatorCommunityData.dao_proposals}
           handleFeatureChange={handleUrlChange}
         />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2} className=" relative">
         <ContentsTop
           title={"Articles"}
-          label={"MEDIUM ACCOUNT LINK"}
-          placeholder={"e.g. hhtps://medium.com/yourlink"}
+          label={"MEDIUM USERNAME"}
+          placeholder={"e.g. @example"}
           featureKey={"articles"}
-          initialValue={creatorCommunityData.articles?.url}
+          initialValue={creatorCommunityData.articles}
           handleFeatureChange={handleUrlChange}
         />
       </CustomTabPanel>

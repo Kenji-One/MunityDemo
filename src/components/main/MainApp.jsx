@@ -15,12 +15,9 @@ export default function MainApp() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
-  const {
-    allCommunitiesMain,
-    allCommunitiesMainLoading,
-    chainId,
-  } = useWeb3Context();
-
+  const { allCommunitiesMain, allCommunitiesMainLoading, chainId } =
+    useWeb3Context();
+  console.log("allCommunitiesMainnnnnnn:", allCommunitiesMain);
   const [communityDatabase, setCommunityData] = useState([]);
   const [usersDatabase, setUsersData] = useState([]);
   useEffect(() => {
@@ -58,8 +55,6 @@ export default function MainApp() {
 
     // fetchCommunities();
   }, []);
-
-
 
   const communityData = {
     name: "Grow your Agency",
@@ -121,130 +116,7 @@ export default function MainApp() {
     },
   ];
 
-  const popularsData = [
-    {
-      title: "Iman Gadzhi Community",
-      communityIMG: "/images/community01.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "community",
-    },
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Iman Gadzhi Community",
-      communityIMG: "/images/community01.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Iman Gadzhi Community",
-      communityIMG: "/images/community01.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Iman Gadzhi Community",
-      communityIMG: "/images/community01.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-  ];
-
-  const categoryGamingData = [
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-
-    {
-      title: "Grow your agency",
-      communityIMG: "/images/community02.png",
-      users: "12k+",
-      slotsLeft: "2,102",
-      url: "#",
-    },
-  ];
-// console.log("testttttttttttttttttt",{loading,allCommunitiesMainLoading})
+  // console.log("testtttttttttttttttt",{loading,allCommunitiesMainLoading})
   return (
     <Box className="mob:mb-[48px] tab:mb-[80px] lap:mb-[120px]">
       <Loader open={loading || allCommunitiesMainLoading} />

@@ -1,6 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { Typography, Box, Button } from "@mui/material";
-
+function createMarkup(htmlContent) {
+  return { __html: htmlContent };
+}
 export default ({ cardImg, userImg, title, text, username, date, url }) => {
   return (
     <Box
@@ -8,11 +10,13 @@ export default ({ cardImg, userImg, title, text, username, date, url }) => {
       className="border-b mob:border-solid mob:pb-4 lap:pb-0 lap:border-none"
     >
       <Box className="flex mob:flex-wrap mob-sm:flex-nowrap mob:gap-4 tab:gap-6 items-start">
-        <img
-          src={cardImg}
-          alt={title}
-          className="w-full h-[110px] max-w-[110px] object-cover"
-        />
+        {cardImg && (
+          <img
+            src={cardImg}
+            alt={title}
+            className="w-full h-[110px] max-w-[110px] object-cover"
+          />
+        )}
         <Box
           className="w-full flex  items-start justify-between gap-6 lap:pb-[20px] border-b mob:border-none lap:border-solid"
           sx={{ borderColor: "primary.border" }}
@@ -64,13 +68,13 @@ export default ({ cardImg, userImg, title, text, username, date, url }) => {
               </Typography>
             </Box>
           </div>
-          <div className="mob:!hidden lap:!block max-w-[614px]">
+          <div className="mob:!hidden lap:!block max-w-[614px] self-center">
             <Typography
               fontSize="14px"
               color="text.secondary"
               lineHeight={"normal"}
             >
-              {text}
+              <span dangerouslySetInnerHTML={createMarkup(text)} />
             </Typography>
             <Button
               className="!mt-3 !p-0"
@@ -95,7 +99,7 @@ export default ({ cardImg, userImg, title, text, username, date, url }) => {
           color="text.secondary"
           lineHeight={"normal"}
         >
-          {text}
+          <span dangerouslySetInnerHTML={createMarkup(text)} />
         </Typography>
         <Button
           className="!mt-3 !p-0"

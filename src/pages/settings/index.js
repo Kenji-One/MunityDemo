@@ -5,6 +5,12 @@ import { useSelector } from "react-redux";
 import Loader from "@/utils/Loader";
 import SettingsNav from "../../components/settings/Navigation";
 import { useWeb3Context } from "@/utils";
+import {
+  updateBackendWithChatAccountId,
+  checkIfUserHaveChatAccount,
+} from "@/components/settings/NotMinted/SellItemForm";
+import { addChannelToCommunity } from "@/components/settings/Community/Channels/ChannelsCard";
+
 export default function Settings() {
   const { theme, userAddress } = useSelector((state) => state.app);
   const router = useRouter();
@@ -13,6 +19,7 @@ export default function Settings() {
   const {
     address,
     connected,
+    registerCommunity,
     registerCommunityLoading,
     buyCommunityNft,
     addressCommunitiesData,
@@ -57,6 +64,91 @@ export default function Settings() {
     message: "",
     severity: "success",
   });
+  const createChatEngineUser = async (userData) => {
+    console.log("userData:", userData);
+    const usersEndpoint = "https://api.chatengine.io/users/";
+
+    const headers = {
+      "PRIVATE-KEY": process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY,
+      "Content-Type": "application/json",
+    };
+    const modifiedUserData = {
+      ...userData,
+      custom_json: JSON.stringify(userData.custom_json), // Convert custom_json to a string
+    };
+    const requestOptions = {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(modifiedUserData),
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(usersEndpoint, requestOptions);
+      const result = await response.json();
+      console.log("uset was created in the chat:", result);
+      return result; // Returning the result which includes user information
+    } catch (error) {
+      console.error("Error creating user in ChatEngine:", error);
+      return null;
+    }
+  };
+
+  const createCommunityChat = async (communityTitle, communityId) => {
+    // Assuming you have the adminUsername from the user creation step
+    let currentUser = await checkIfUserHaveChatAccount(address);
+    let username = currentUser.username;
+    if (!currentUser?.chat_account_id) {
+      const chatCreationResult = await createChatEngineUser({
+        username: userData.username, // This would be dynamically determined
+        first_name: userData?.first_name || communityTitle, // Adjust based on your requirements
+        last_name: userData?.last_name || "Admin",
+        secret: address, // Consider a secure way to handle secrets
+        custom_json: { role: "admin" },
+      });
+      if (chatCreationResult && chatCreationResult.id) {
+        await updateBackendWithChatAccountId(
+          currentUser._id,
+          chatCreationResult.id
+        );
+        username = chatCreationResult.username;
+      }
+    }
+
+    // Now that the user is created, proceed to create the chat
+    const chatEngineEndpoint = "https://api.chatengine.io/chats/";
+
+    const headers = new Headers({
+      "Project-ID": process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      "User-Name": username,
+      "User-Secret": address, // This should match the secret used in user creation
+      "Content-Type": "application/json",
+    });
+
+    const body = JSON.stringify({
+      usernames: [username], // Admin username
+      title: `General`,
+      is_direct_chat: false,
+    });
+
+    const requestOptions = {
+      method: "PUT",
+      headers: headers,
+      body: body,
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(chatEngineEndpoint, requestOptions);
+      const data = await response.json();
+      console.log("Chat creation successful", data);
+      await addChannelToCommunity(communityId, "General", data.id);
+      return data;
+    } catch (error) {
+      console.error("Error in creating chat with ChatEngine:", error);
+    }
+  };
+
   const handleCommunitySubmit = async (communityData, id, hasFiles) => {
     setLoading(true);
     const method = id ? "PUT" : "POST";
@@ -83,6 +175,12 @@ export default function Settings() {
           } successfully`,
           severity: "success",
         });
+        // Assuming the community title is part of `data.data`
+        const communityTitle = data.data.name;
+        // const communityTitle = communityData.name;
+
+        // Proceed to create a chat for this community
+        await createCommunityChat(communityTitle, data.data._id);
       } else {
         setSnackbar({
           open: true,
@@ -97,7 +195,12 @@ export default function Settings() {
     }
   };
 
-  const handleFeatureChange = async (featureKey, isActive, url) => {
+  const handleFeatureChange = async (
+    featureKey,
+    isActive,
+    url,
+    featureData
+  ) => {
     setLoading(true);
 
     try {
@@ -111,6 +214,7 @@ export default function Settings() {
             featureKey: featureKey,
             is_active: isActive,
             url: url,
+            ...featureData,
           }), // send only the fields that need to be updated
         }
       );

@@ -13,7 +13,7 @@ export default function ControlledSwitches({
   handleToggleChange,
 }) {
   let isChecked = isSingle ? data : true;
-  const [checked, setChecked] = useState(isChecked);
+  const [checked, setChecked] = useState(isChecked || false);
   // Synchronize checked state with isChecked whenever isChecked changes
   useEffect(() => {
     setChecked(isChecked);

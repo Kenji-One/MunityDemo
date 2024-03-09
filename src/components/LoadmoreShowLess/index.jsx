@@ -22,7 +22,8 @@ export default ({
   };
 
   const showLessItems = () => {
-    setVisibleItems((prevVisibleItems) => Math.max(prevVisibleItems - step, 0));
+    // setVisibleItems((prevVisibleItems) => Math.max(prevVisibleItems - step, 0));
+    setVisibleItems(initialItems); // Reset to initialItems
   };
 
   const slicedData = data.slice(0, visibleItems);
@@ -37,11 +38,9 @@ export default ({
               sx={{ ...addSingleBoxSX }}
               className={"!w-auto " + singleClassNames}
             >
-              {/* Render your component using the provided renderItem function */}
               {renderItem(item)}
             </Box>
           ))}
-          {/* && nav === "accessKeys" */}
           {!areNFTs ? (
             <Box
               className="absolute inset-0 w-full h-full z-30"
@@ -65,7 +64,7 @@ export default ({
               </Button>
             </Box>
           )}
-          {visibleItems > step && data.length > step && (
+          {visibleItems > initialItems && data.length > initialItems && (
             <Box className="w-full flex justify-center col-span-full lap:mt-[20px] uppercase">
               <Button
                 variant="contained"
@@ -89,7 +88,7 @@ export default ({
             )}
           </TableBody>
 
-          {(visibleItems > step && data.length > step) ||
+          {(visibleItems > initialItems && data.length > initialItems) ||
           visibleItems < data.length ? (
             <TableBody>
               <TableRow
@@ -119,19 +118,20 @@ export default ({
                       Load More
                     </Button>
                   )}
-                  {visibleItems > step && data.length > step && (
-                    <Button
-                      variant="contained"
-                      sx={{
-                        color: "primary.reversed",
-                        lineHeight: "120% !important",
-                      }}
-                      onClick={showLessItems}
-                      className="!uppercase black"
-                    >
-                      Show Less
-                    </Button>
-                  )}
+                  {visibleItems > initialItems &&
+                    data.length > initialItems && (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          color: "primary.reversed",
+                          lineHeight: "120% !important",
+                        }}
+                        onClick={showLessItems}
+                        className="!uppercase black"
+                      >
+                        Show Less
+                      </Button>
+                    )}
                 </TableCell>
               </TableRow>
             </TableBody>

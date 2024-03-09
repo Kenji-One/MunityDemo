@@ -47,45 +47,42 @@ export const useWeb3Context = () => {
 };
 
 export const Web3ContextProvider = ({ children }) => {
-
-  const {address:connectedWallet} = useAccount()
+  const { address: connectedWallet } = useAccount();
   // const {chain:connectedChainId} = useChainId()
-  const connectedChainId = useChainId()
+  const connectedChainId = useChainId();
 
   const [connected, setConnected] = useState(false);
   const [chainId, setChainId] = useState("");
   const [address, setAddress] = useState("");
   const [addressCommunitiesData, setAddressCommunitiesData] = useState([]);
+  const [addressCommunitiesDataLoading, setAddressCommunitiesDataLoading] =
+    useState(false);
   const [provider, setProvider] = useState(null);
   const [web3Modal, setWeb3Modal] = useState(null);
 
-
   useEffect(() => {
-    console.log("connectedWallet",connectedWallet)
-    if (connectedWallet){
-      setAddress(connectedWallet)
-      setConnected(true)
+    console.log("connectedWallet", connectedWallet);
+    if (connectedWallet) {
+      setAddress(connectedWallet);
+      setConnected(true);
       setLocalItem("connected_address", connectedWallet);
       setLocalItem("connected_state", true);
-      
-    }else{
-      setConnected(false)
-      setAddress("")
-      clearLocalItems()
+    } else {
+      setConnected(false);
+      setAddress("");
+      clearLocalItems();
     }
   }, [connectedWallet]);
 
   useEffect(() => {
-    console.log("connectedChainId",connectedChainId)
-    if (connectedChainId){
-      setChainId(connectedChainId)
+    console.log("connectedChainId", connectedChainId);
+    if (connectedChainId) {
+      setChainId(connectedChainId);
       setLocalItem("connected_chain", connectedChainId);
-
-    }else{
-      setChainId("")
+    } else {
+      setChainId("");
     }
   }, [connectedChainId]);
-
 
   useEffect(() => {
     const initWeb3Modal = async () => {
@@ -529,6 +526,7 @@ export const Web3ContextProvider = ({ children }) => {
   };
 
   const getUserTotalCommunitiesRegistered = async (userAddresses) => {
+    setAddressCommunitiesDataLoading(true);
     const contract = await getMunityContractToRead();
     if (contract) {
       // Filter events
@@ -544,14 +542,23 @@ export const Web3ContextProvider = ({ children }) => {
         // console.log('All events:', events[_id]?.args[1]);
         const currentID = events[_id]?.args[1].toString();
         const communityData = await getCommunityDetailsById(currentID);
+        const joinedUsers = await getCommunityJoinedMembers(
+          currentID,
+          communityData.chainId
+        );
+        communityData.joinedUsers = joinedUsers;
         if (communityData) allCommunityDaata.push(communityData);
       }
 
       // console.log("allCommunityDaata",allCommunityDaata);
       setAddressCommunitiesData(allCommunityDaata);
+      setAddressCommunitiesDataLoading(false);
+
       return allCommunityDaata;
     } else {
       setAddressCommunitiesData([]);
+      setAddressCommunitiesDataLoading(false);
+
       return [];
     }
   };
@@ -559,16 +566,14 @@ export const Web3ContextProvider = ({ children }) => {
     useState(false);
   const [allCommunitiesMain, setAllCommunitiesMain] = useState([]);
   const getAllRegisteredCommunities = async () => {
-
-    try{
-
+    try {
       setAllCommunitiesMainLoading(true);
       const contract = await getMunityContractToRead();
       // console.log("allCommunityData here",{contract});
       if (contract) {
         const total = await getTotalCommunitiesRegistered();
-        console.log("getTotalCommunitiesRegistered",total)
-  
+        console.log("getTotalCommunitiesRegistered", total);
+
         let allCommunityData = [];
         for (let _id = 1; _id <= Number(total); _id++) {
           const data = await getCommunityDetailsById(_id);
@@ -588,9 +593,14 @@ export const Web3ContextProvider = ({ children }) => {
               slotsLeft: data?.supply ?? "0",
               url: `community/${_id}`,
             });
+
+            if (_id === 9) {
+              setAllCommunitiesMainLoading(false);
+              setAllCommunitiesMain(allCommunityData);
+            }
           }
         }
-  
+
         console.log("allCommunityData", allCommunityData);
         setAllCommunitiesMain(allCommunityData);
         setAllCommunitiesMainLoading(false);
@@ -598,14 +608,11 @@ export const Web3ContextProvider = ({ children }) => {
         setAllCommunitiesMainLoading(false);
         setAllCommunitiesMain([]);
       }
-    }catch(error){
+    } catch (error) {
       setAllCommunitiesMain([]);
-      
-    }finally{
-      
+    } finally {
       setAllCommunitiesMainLoading(false);
     }
-
   };
 
   //================== WRITES =============================
@@ -1021,8 +1028,8 @@ export const Web3ContextProvider = ({ children }) => {
   useEffect(() => {
     if (address !== "" && chainId !== "") {
       getUserTotalCommunitiesRegistered(address);
-    }else{
-      setAddressCommunitiesData([])
+    } else {
+      setAddressCommunitiesData([]);
     }
   }, [address, chainId]);
 
@@ -1084,11 +1091,13 @@ export const Web3ContextProvider = ({ children }) => {
       getUserTotalCommunitiesRegistered,
       alertMessage,
       getCommunityJoinedMembers,
+      addressCommunitiesDataLoading,
     }),
     [
       connected,
       address,
       chainId,
+      addressCommunitiesDataLoading,
       // connect,
       // disconnect,
       // provider,

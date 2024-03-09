@@ -37,9 +37,30 @@ export default function CustomCard({
   const backgroundStyle = backgroundImg
     ? `linear-gradient(180deg, rgba(16, 17, 27, 0.00) 0%, rgba(16, 17, 27, 0.80) 100%), url(${cardImg})`
     : {};
+
+  function abbreviateBody(content, maxLength = 250) {
+    // Remove Markdown and unnecessary characters
+    const cleanContent = content.replace(/---[\s\S]*?---/, "").trim();
+    // Convert Markdown links to plain text
+    const noMarkdownLinks = cleanContent.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      "$1"
+    );
+    // Summarize content
+    if (noMarkdownLinks.length > maxLength) {
+      return noMarkdownLinks.substring(0, maxLength) + "...";
+    }
+    return noMarkdownLinks;
+  }
+
+  function abbreviateAddress(address) {
+    return address.slice(0, 6) + "..." + address.slice(-4);
+  }
   return (
     <Box
-      className={"flex flex-col items-start !bg-no-repeat " + cardClassNames}
+      className={
+        "flex flex-col items-start !bg-no-repeat bg-cover " + cardClassNames
+      }
       sx={{
         color: titleColor,
         background: backgroundStyle,
@@ -60,9 +81,14 @@ export default function CustomCard({
             className={"w-full flex items-center justify-between gap-2 mb-3 "}
           >
             <Box className="flex items-center gap-[12px]">
-              <img src={cardImg} alt={title} className="w-8 h-8 object-cover" />
+              <img
+                src={"/images/profile.png"}
+                alt={title}
+                className="w-8 h-8 object-cover"
+              />
+
               <Typography fontSize="16.5px" fontWeight="400">
-                {username}
+                {abbreviateAddress(username)}
               </Typography>
             </Box>
 
@@ -132,7 +158,7 @@ export default function CustomCard({
                 color="text.secondary"
                 lineHeight={"normal"}
               >
-                {text}
+                {isDAOCard ? abbreviateBody(text) : text}
               </Typography>
               {/* Yes/No/Abstain Rows */}
               {isDAOCard && (

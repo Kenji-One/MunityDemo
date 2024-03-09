@@ -103,10 +103,10 @@ export default function Profile({ userAddress, setLoading, userData }) {
         email: userData.email,
         user_avatar: userData.user_avatar
           ? userData.user_avatar
-          : "/images/Avatar.jpeg",
+          : "/images/profile.png",
         user_banner: userData.user_banner
           ? userData.user_banner
-          : "/images/cover.jpeg",
+          : "/images/defaultBanner.jpg",
         is_verified: userData.is_verified,
         address: userData.address,
         join_date: userData.join_date,
@@ -115,6 +115,40 @@ export default function Profile({ userAddress, setLoading, userData }) {
       });
     }
   }, [userData]);
+  const updateChatEngineUser = async (username, avatarFile) => {
+    const chatEngineApiUrl = `https://api.chatengine.io/users/${userData.chat_account_id}/`;
+    // Create form data and append the file
+    let formData = new FormData();
+    avatarFile?.name && formData.append("avatar", avatarFile, avatarFile.name);
+
+    // Add username if you're updating it as well
+    formData.append("username", username);
+    var myHeaders = new Headers();
+    myHeaders.append(
+      "PRIVATE-KEY",
+      process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY
+    );
+
+    const requestOptions = {
+      method: "PATCH", // Or 'PUT' depending on the API requirements
+      headers: myHeaders,
+      body: formData,
+    };
+
+    try {
+      const response = await fetch(chatEngineApiUrl, requestOptions);
+      if (response.ok) {
+        console.log("ChatEngine user updated successfully");
+      } else {
+        // If the call was not successful, we can get more information from the response
+        const errorResponse = await response.text();
+        console.error("Failed to update ChatEngine user:", errorResponse);
+        throw new Error("Failed to update ChatEngine user");
+      }
+    } catch (error) {
+      console.error("Error updating ChatEngine user:", error);
+    }
+  };
 
   const updateUserImage = async (imageFile, type) => {
     // 'type' can be 'avatar' or 'banner'
@@ -132,6 +166,9 @@ export default function Profile({ userAddress, setLoading, userData }) {
       }
 
       const data = await response.json();
+      if (type === "avatar" && data.success && userData?.chat_account_id) {
+        updateChatEngineUser(currentUserData.username, imageFile);
+      }
       // setLoading(false);
       setSnackbar({
         open: true,
@@ -169,6 +206,12 @@ export default function Profile({ userAddress, setLoading, userData }) {
 
       if (response.ok) {
         const data = await response.json();
+        if (
+          formData.username !== currentUserData.username &&
+          data.data.chat_account_id
+        ) {
+          updateChatEngineUser(formData.username, currentUserData.user_avatar);
+        }
         console.log("User text data updated successfully");
         // Update the current user data state
         setCurrentUserData((prevData) => ({
@@ -200,44 +243,6 @@ export default function Profile({ userAddress, setLoading, userData }) {
   const { address, chainId } = useWeb3Context();
   const [allNftData, setAllNftData] = useState([]);
 
-  // const getUserOwnedAccessKey = async (userAddress, chainId) => {
-  //   try {
-  //     // console.log("hittttt",availableChains[chainId].chainHex);
-  //     const response = await Moralis.EvmApi.nft.getWalletNFTs({
-  //       chain: availableChains[chainId].chainHex,
-  //       // "chain": "0x13881",
-  //       format: "decimal",
-  //       tokenAddresses: [MUNITY_CONFIG[chainId].address],
-  //       mediaItems: false,
-  //       address: userAddress,
-  //     });
-
-  //     console.log("getUserOwnedAccessKey", response?.raw?.result);
-
-  //     const dataWithParsedMetadata =
-  //       response?.raw?.result.length > 0
-  //         ? await response?.raw?.result.map(async (item) => {
-  //             console.log("item:", item);
-  //             const uriData = await getResponseFromUri(item.token_uri);
-  //             // const tempData = JSON.parse(item.metadata);
-  //             console.log("uriData:", uriData);
-  //             return {
-  //               img: uriData?.image,
-  //               title: uriData?.name,
-  //               amount: item.amount,
-  //               url: GET_MARKETPALCE_URL(chainId, item.token_id),
-  //             };
-  //           })
-  //         : [];
-
-  //     console.log("getUserOwnedAccessKey", dataWithParsedMetadata);
-
-  //     setAllNftData(dataWithParsedMetadata);
-  //   } catch (e) {
-  //     console.error(e);
-  //     setAllNftData([]);
-  //   }
-  // };
   const getUserOwnedAccessKey = async (userAddress, chainId) => {
     try {
       const response = await Moralis.EvmApi.nft.getWalletNFTs({

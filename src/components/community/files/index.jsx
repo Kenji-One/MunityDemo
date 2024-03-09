@@ -7,7 +7,6 @@ import ArrowBackSharpIcon from "@mui/icons-material/ArrowBackSharp";
 import FileCard from "../fileCard";
 import NoFiles from "../noData/noFiles";
 
-import nofiles from "../../../../public/images/nofiles.png";
 export default function Files(props) {
   const { filesContent, areFiles, areNFTs } = props;
   const [openFolderId, setOpenFolderId] = useState(null);
@@ -28,7 +27,7 @@ export default function Files(props) {
     return { currentFolder }; // This will directly return the folder object or undefined if not found
   }, [filesContent.folders, openFolderId]);
   return (
-    <Box className={`${!areNFTs ? "blur-[10px] pb-4 h-[972px]" : ""}`}>
+    <Box className={`${!areNFTs ? "blur-[10px] pb-4 min-h-[972px]" : ""}`}>
       {openFolderId && (
         <Box className="flex items-center mb-4 mob:mt-6 tab:mt-8">
           <IconBtn
@@ -111,7 +110,10 @@ export default function Files(props) {
             ))}
         </Box>
       ) : (
-        <NoFiles image={nofiles} text="Files is empty" />
+        <NoFiles
+          image={"/images/nofiles.png"}
+          text="Files is not uploaded yet"
+        />
       )}
     </Box>
   );

@@ -180,6 +180,8 @@ export default function SettingsNav({
                   handleToggleChange={handleToggleChange}
                   setLoading={setLoading}
                   setSnackbar={setSnackbar}
+                  userData={userData}
+                  userAddress={userAddress}
                 />
                 <Box className="pb-[40px] relative overflow-hidden">
                   <ContentNav

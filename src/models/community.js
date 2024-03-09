@@ -21,8 +21,9 @@ const communitySchema = new Schema(
     discount: { type: Number },
     uri: { type: String },
     merch: {
-      url: String,
-      is_active: { type: Boolean, default: true },
+      shopify_storefront_url: { type: String },
+      shopify_access_token: { type: String },
+      is_active: { type: Boolean, default: false },
     },
     dao_proposals: {
       url: String,
@@ -52,6 +53,7 @@ const communitySchema = new Schema(
       data: [RoadmapSchema],
     },
     channels: [ChannelSchema],
+    // general_chat_id: { type: String },
     minting_price: { type: Number, default: 0 },
     key_quantity: { type: Number, default: 100 },
     key: KeySchema,

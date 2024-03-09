@@ -56,9 +56,9 @@ const links = [
   { label: "Gaming", link: "/gaming", soon: true },
   { label: "Memberships", link: "/pricing", soon: true },
   { label: "Photography", link: "/gallery", soon: true },
-  { label: "Single", link: "/single", soon: true },
-  { label: "Community", link: "/community", soon: true },
-  { label: "Profile", link: "/profile", soon: true },
+  { label: "Single", link: "/single", soon: false },
+  { label: "Community", link: "/community", soon: false },
+  { label: "Profile", link: "/profile", soon: false },
   { label: "Settings", link: "/settings", soon: false },
   { label: "Watchlist", link: "/watchlist", soon: true },
 ];

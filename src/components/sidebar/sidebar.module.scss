@@ -2,14 +2,14 @@
   // @media only screen and (max-width: 40em) {
   //   position: absolute;
   // }
-
   right: 0;
   top: 0;
   bottom: 0;
+  z-index: 999;
   width: 40rem;
   background: #10111b;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-  overflow: hidden;
+  // overflow: hidden;
   @media only screen and (max-width: 64em) {
     position: fixed;
     width: 100%;
@@ -17,6 +17,7 @@
   }
   &[data-collapse="true"] {
     width: 6.5rem;
+    overflow: hidden;
     @media only screen and (max-width: 64em) {
       top: 120px;
       height: fit-content;
@@ -25,12 +26,37 @@
     }
   }
 }
-
+.content {
+  background: #10111b;
+  z-index: 999;
+  height: 100%;
+  &[data-full="true"] {
+    overflow: hidden;
+  }
+}
+@media only screen and (min-width: 64em) {
+  .fullscreen {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 60px;
+    background-color: rgba(16, 17, 27, 0.698);
+    z-index: 999;
+    .ce-chat-title-text {
+      justify-content: center;
+    }
+  }
+}
 .top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem;
+  &[data-collapse="false"] {
+    border-bottom: 1px solid #ffffff1a;
+  }
 }
 
 .toggle {

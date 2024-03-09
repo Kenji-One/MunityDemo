@@ -6,6 +6,7 @@ export default function ContentTabs({
   handleChange,
   navTabs,
   a11yProps,
+  type,
   classNames,
   addSX,
 }) {
@@ -20,11 +21,13 @@ export default function ContentTabs({
       aria-label="scrollable auto tabs"
       sx={{ borderColor: "primary.border", ...addSX }}
     >
-      {navTabs.map(({ label, index }) => (
+      {navTabs.map(({ label, is_active, index }) => (
         <Tab
           key={label}
           label={label}
-          className="!text-lg !font-light !capitalize mob:!px-6 mob:!py-4 lap:!p-6"
+          className={`${
+            type !== "settings" && !is_active && "hidden"
+          } !text-lg !font-light !capitalize mob:!px-6 mob:!py-4 lap:!p-6`}
           sx={{ minWidth: "fit-content", flex: 1, color: "text.secondary" }}
           {...a11yProps(index)}
         />

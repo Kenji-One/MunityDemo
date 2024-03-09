@@ -7,6 +7,7 @@ const initialState = {
   mode: "user",
   userAddress: "",
   showLiveChat: false,
+  showFullscreen: false,
   ...appState?.app,
 };
 
@@ -26,6 +27,9 @@ const appSlice = createSlice({
     toggleLiveChat: (state, action) => {
       state.showLiveChat = action.payload;
     },
+    toggleFullscreen: (state, action) => {
+      state.showFullscreen = action.payload;
+    },
   },
 });
 
@@ -33,8 +37,13 @@ const baseInfo = (state) => state.app;
 
 export const appReducer = appSlice.reducer;
 
-export const { setTheme, setMode, setUserAddress, toggleLiveChat } =
-  appSlice.actions;
+export const {
+  setTheme,
+  setMode,
+  setUserAddress,
+  toggleLiveChat,
+  toggleFullscreen,
+} = appSlice.actions;
 
 export const getAppState = createSelector(baseInfo, (app) => app);
 // export const getUserAddress = createSelector(

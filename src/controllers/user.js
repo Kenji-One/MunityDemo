@@ -175,3 +175,29 @@ export const updateUserSocials = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// Update user's chat account ID
+export const updateUserWithChatAccountId = async (req, res) => {
+  const { id } = req.query;
+  const { chat_account_id } = req.body;
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).json({ error: "User not found" }); // Correctly send a response
+    }
+
+    // Update the user with the chat account ID
+    user.chat_account_id = chat_account_id;
+    await user.save();
+
+    console.log("Updated user with chat account ID:", user);
+    return res.status(200).json({ message: "Successfully updated", user }); // Successfully updated
+  } catch (error) {
+    console.error("Error updating user with chat account ID:", error);
+    return res
+      .status(500)
+      .json({ error: "Error updating user with chat account ID" }); // Error occurred
+  }
+};

@@ -31,10 +31,11 @@ import { IS_TEST_MODE } from "@/utils";
 import { useSelector } from "react-redux";
 
 const { wallets } = getDefaultWallets();
+const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
 const config = getDefaultConfig({
   appName: "Munity Dapp",
-  projectId: "0399aa604100492978c02cac03193502",
+  projectId: walletConnectProjectId,
   wallets: [
     ...wallets,
     {

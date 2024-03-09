@@ -15,22 +15,6 @@ import SellItemForm from "@/components/settings/NotMinted/SellItemForm";
 import Loader from "@/utils/Loader";
 import { formatDate } from "@/utils/helpers";
 
-const dummyData = {
-  name: "Iman Gadzhi",
-  chain: "Ethereum",
-  category: "Finances",
-  joinedDate: "OCT 22",
-  communityIMG: "/images/CommunityImage.png",
-  users: "12k+",
-  by: "ImanGadzhi",
-  slotsLeft: "2,102",
-  isVerified: true,
-  about: [
-    "Lorem ipsum dolor sit amet consectetur. Hendrerit elit mauris morbi nunc. Felis hendrerit a purus leo erat eget lectus laoreet. In amet dolor duis mauris cursus tincidunt pellentesque lectus. Aliquam velit rhoncus eget dignissim integer. Semper lectus mattis penatibus libero feugiat felis volutpat et id. Leo tellus ut velit vehicula purus vitae turpis dignissim aliquam. Eu ut rhoncus non augue. Vitae metus mattis nulla velit leo sed at condimentum. Sodales ipsum donec sed vulputate erat enim maecenas mi. Viverra pharetra consectetur erat odio lectus commodo sagittis amet sit. Dui metus egestas libero fames congue morbi semper. Accumsan cursus in at massa. ",
-    " Sagittis maecenas arcu at vitae et egestas ut. Mauris venenatis fusce sed enim magna bibendum dignissim. Quam in sagittis ipsum sit in elementum. Turpis lorem nisl nec habitasse purus. Vitae sed et lacus sollicitudin magna interdum hendrerit facilisi enim. Feugiat hac odio accumsan libero. Non habitant egestas vulputate phasellus non urna. Mauris sed vulputate dolor commodo dolor dolor. Consectetur pellentesque feugiat urna odio nulla blandit. Morbi orci nunc leo risus. Pellentesque at feugiat pulvinar id ullamcorper sed. Nisl purus placerat est in turpis tortor morbi. Imperdiet nisl enim metus eu. Etiam orci ut a lacus mollis.",
-  ],
-};
-
 const SingleCommunityPage = () => {
   const {
     getCommunityDetailsById,
@@ -38,9 +22,13 @@ const SingleCommunityPage = () => {
     getUserCommunityBalance,
     address,
     chainId,
+    connected,
   } = useWeb3Context();
+  const [areNFTs, setAreNfts] = useState(false);
 
   const [backendcommunityData, setBackendCommunityData] = useState(null);
+  const [userData, setUserData] = useState([]);
+  const [creatorData, setCreatorData] = useState([]);
   const [currentId, setCurrentId] = useState(null);
   const [communityDataContract, setCommunityDataContract] = useState(null);
   const [userCommunityBalance, setUserCommunityBalance] = useState({
@@ -54,6 +42,18 @@ const SingleCommunityPage = () => {
   const { id } = router.query; // Retrieve the community ID from the URL
   const { theme } = useSelector((state) => state.app);
   const [modalOpen, setModalOpen] = useState(false);
+  const isCreatorOfThisCommunity =
+    connected &&
+    communityDataContract &&
+    address.toLowerCase() === communityDataContract.by.toLowerCase();
+  useEffect(() => {
+    // console.log("Usernavigation",userCommunityBalance);
+    if (Number(userCommunityBalance.balance) > 0 || isCreatorOfThisCommunity) {
+      setAreNfts(true);
+    } else {
+      setAreNfts(false);
+    }
+  }, [userCommunityBalance]);
   useEffect(() => {
     // If the id is declared, redirect to the main page
     if (!id) {
@@ -73,6 +73,15 @@ const SingleCommunityPage = () => {
 
   useEffect(() => {
     // Define the function inside useEffect
+    const fetchCommunityCreatorData = async (creatorId) => {
+      try {
+        const response = await fetch(`/api/users/${creatorId}`);
+        const data = await response.json();
+        setCreatorData(data.data);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
     const fetchCommunityDataFromBackend = async (currentId) => {
       try {
         const response = await fetch(`/api/communities/contract/${currentId}`);
@@ -92,6 +101,7 @@ const SingleCommunityPage = () => {
         setLoading(true);
         const data2 = await getCommunityDetailsById(currentId);
         const dataBackend = await fetchCommunityDataFromBackend(currentId);
+        await fetchCommunityCreatorData(dataBackend.user_id);
         console.log("ddsdsdsdsdsd currentId", currentId, data2);
         const joinedDate = dataBackend.createdAt
           ? formatDate(dataBackend.createdAt)
@@ -180,14 +190,32 @@ const SingleCommunityPage = () => {
   //     fetchCommunityData();
   //   }
   // }, [currentId]);
+  useEffect(() => {
+    const getCurrentUserByAddress = async () => {
+      try {
+        const API_URL = `/api/users?address=${address}`; // Adjust based on your API endpoint
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("User not found");
+        const data = await response.json();
+        console.log("user was found in single:", data.data);
+        setUserData(data.data);
+        return data.data; // Assuming the response includes user data under a 'user' key
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
 
+    if (address) getCurrentUserByAddress();
+  }, [address]);
   const channels = [
     { title: "Articles", badge: 2 },
     { title: "Upcoming Events", badge: 150 },
     { title: "Great news", badge: 200 },
     { title: "DAO Proposals", badge: 0 },
   ];
+
   const communityBackground = "/images/profileBanner.png";
+
   return (
     <Box>
       <Loader open={loading} />
@@ -202,11 +230,20 @@ const SingleCommunityPage = () => {
                 communityDataContract={communityDataContract}
                 userCommunityBalance={userCommunityBalance}
                 handleOpenBuyForm={handleOpen}
+                areNFTs={areNFTs}
+                isCreatorOfThisCommunity={isCreatorOfThisCommunity}
+                creatorData={creatorData}
+                setLoading={setLoading}
               />
             </Box>
 
-            <SideBar>
-              <SideBarContent title={"General"} chats={channels} />
+            <SideBar areNFTs={areNFTs}>
+              <SideBarContent
+                title={"General"}
+                chats={channels}
+                userData={userData}
+                address={address}
+              />
             </SideBar>
             <ReusableModal
               isOpen={modalOpen}
@@ -218,6 +255,8 @@ const SingleCommunityPage = () => {
                 type="buy"
                 tokenId={currentId}
                 setLoading={setLoading}
+                backendcommunityData={backendcommunityData}
+                creatorData={creatorData}
               />
             </ReusableModal>
           </>

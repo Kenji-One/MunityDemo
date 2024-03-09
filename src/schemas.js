@@ -108,6 +108,7 @@ const FolderSchemaJoi = Joi.object().keys({
 // Joi validation for FolderSchema
 const ChannelSchemaJoi = Joi.object().keys({
   title: Joi.string().required(),
+  chat_id: Joi.number().required(),
 });
 
 // Joi validation for RoadmapSchema
@@ -125,7 +126,9 @@ const RoadmapSchemaJoi = Joi.object().keys({
 const CommunityFeatureValidationSchemaJoi = Joi.object({
   featureKey: Joi.string(),
   is_active: Joi.boolean(),
-  url: Joi.string().allow(""),
+  url: Joi.any().allow(""),
+  shopify_storefront_url: Joi.string().allow(""),
+  shopify_access_token: Joi.any().allow(""),
 });
 
 // schema for community validation

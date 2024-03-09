@@ -6,12 +6,58 @@ import CustomInput from "../CustomInput";
 import SingleFee from "./SingleFee";
 import BlueBtn from "../../Buttons/BlueBtn";
 import { useWeb3Context } from "@/utils";
+// import { uploadAvatarToChatEngine } from "@/utils/helpers";
 import { ethers } from "ethers";
 
 const ethToUsdRate = 3000; // Example static conversion rate. Replace with a dynamic fetch in production.
+export const updateBackendWithChatAccountId = async (userId, chatAccountId) => {
+  try {
+    const API_URL = `/api/users/chat/${userId}`;
+    const response = await fetch(API_URL, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        // Include any other headers your API requires, such as an authorization token
+      },
+      body: JSON.stringify({ chat_account_id: chatAccountId }),
+    });
 
-const SellItemForm = ({ onSubmit, theme, type, tokenId, setLoading }) => {
-  const { getCommunityNftPayAmount, buyCommunityNft } = useWeb3Context();
+    if (!response.ok) {
+      throw new Error("Failed to update user with chat account ID");
+    }
+
+    // const data = await response.json();
+    console.log("Successfully updated user with chat account ID");
+    return true; // Indicate success
+  } catch (error) {
+    console.error("Error updating user with chat account ID:", error);
+    return false; // Indicate failure
+  }
+};
+export const checkIfUserHaveChatAccount = async (address) => {
+  try {
+    const API_URL = `/api/users?address=${address}`; // Adjust based on your API endpoint
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error("User not found");
+    const data = await response.json();
+    console.log("sellitemForm file user was found:", data.data);
+
+    return data.data; // Assuming the response includes user data under a 'user' key
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+};
+const SellItemForm = ({
+  onSubmit,
+  theme,
+  type,
+  tokenId,
+  setLoading,
+  backendcommunityData,
+  creatorData,
+}) => {
+  const { getCommunityNftPayAmount, buyCommunityNft, address } =
+    useWeb3Context();
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(0.003);
   const [totalEarnings, setTotalEarnings] = useState(0);
@@ -23,6 +69,15 @@ const SellItemForm = ({ onSubmit, theme, type, tokenId, setLoading }) => {
   // Fees
   const munityFeePercentage = 2.5;
   const creatorRoyaltyPercentage = 2.0;
+  const [creds, setCreds] = useState(null);
+
+  useEffect(() => {
+    setCreds({
+      projectID: process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      userName: creatorData.username,
+      userSecret: creatorData.address,
+    });
+  }, [creatorData]);
 
   useEffect(() => {
     // Update the ETH to USD conversion whenever the price in ETH changes or the quantity changes
@@ -79,6 +134,67 @@ const SellItemForm = ({ onSubmit, theme, type, tokenId, setLoading }) => {
     }
   }, [quantity, price, type]);
 
+  async function addUserToCommunityChats(username) {
+    const { channels } = backendcommunityData; // Assuming this is the structure
+    for (const channel of channels) {
+      console.log("CHannellessssssssdf:", channel);
+      try {
+        const response = await fetch(
+          `https://api.chatengine.io/chats/${channel.chat_id}/people/`,
+          {
+            method: "POST",
+            headers: {
+              "Project-ID": creds.projectID,
+              "User-Name": creds.userName,
+              "User-Secret": creds.userSecret,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username, // The username of the user to be added to the chat
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to add user to chat ${channel.chat_id}`);
+        }
+
+        const result = await response.json();
+        console.log(
+          `User ${username} added to chat ${channel.chat_id}`,
+          result
+        );
+      } catch (error) {
+        console.error("Error adding user to chat:", error);
+      }
+    }
+  }
+
+  const createChatEngineUser = async (userData) => {
+    const usersEndpoint = "https://api.chatengine.io/users/";
+    const headers = {
+      "PRIVATE-KEY": process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY,
+      "Content-Type": "application/json",
+    };
+
+    const requestOptions = {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(userData),
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(usersEndpoint, requestOptions);
+      const result = await response.json();
+      console.log("uset was created in the chat:", result);
+      return result; // Returning the result which includes user information
+    } catch (error) {
+      console.error("Error creating user in ChatEngine:", error);
+      return null;
+    }
+  };
+
   const handleQuantityChange = (event) => {
     setQuantity(event.target.value);
   };
@@ -96,7 +212,35 @@ const SellItemForm = ({ onSubmit, theme, type, tokenId, setLoading }) => {
         quantity,
         ethers.parseEther(buyData?.payAmount?.toFixed(10)?.toString())
       );
+
       if (response) {
+        let currentUser = await checkIfUserHaveChatAccount(address);
+
+        if (!currentUser?.chat_account_id) {
+          // Assuming createChatEngineUser returns the new chat user ID
+          const newUser = await createChatEngineUser({
+            username: currentUser.username, // This would be dynamically determined
+            first_name: currentUser?.first_name || currentUser.username, // Adjust based on your requirements
+            last_name: currentUser?.last_name || "Member",
+            secret: address, // Consider a secure way to handle secrets
+            // custom_json: { role: "admin" },
+          });
+          // const newUser = uploadAvatarToChatEngine(
+          //   currentUser?.user_avatar ||
+          //     "https://munitydatabucket.s3.amazonaws.com/profile.png",
+          //   {
+          //     username: currentUser.username, // This would be dynamically determined
+          //     first_name: currentUser?.first_name || currentUser.username, // Adjust based on your requirements
+          //     last_name: currentUser?.last_name || "Member",
+          //     secret: address, // Consider a secure way to handle secrets
+          //     // custom_json: { role: "admin" },
+          //   }
+          // );
+          if (newUser && newUser.id) {
+            await updateBackendWithChatAccountId(currentUser._id, newUser.id);
+          }
+        }
+        await addUserToCommunityChats(currentUser.username);
         router.reload();
       }
     } else {

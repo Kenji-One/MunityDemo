@@ -4,9 +4,9 @@ import SettingsBox from "../SettingsBoxMain";
 import ToggleInput from "./ToggleInput";
 import Card from "../../Card";
 import ChannelsCard from "./Channels/ChannelsCard";
-import WhiteList from "./Whitelist/WhiteList";
+// import WhiteList from "./Whitelist/WhiteList";
 import NFTCreationFormSingle from "./NFTCreation/NFTCreationFormSingle";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import WhiteListSingle from "./Whitelist/WhiteListSingle";
 // import NFTCreationForm from "./NFTCreation/NFTCreationForm";
 
@@ -26,6 +26,8 @@ export default function CommunitySettingsSingle({
   setLoading,
   setSnackbar,
   refetchData,
+  userData,
+  userAddress,
 }) {
   const CommunitySettingsTogglesConfig = [
     {
@@ -115,6 +117,8 @@ export default function CommunitySettingsSingle({
         </Box>
         <Box className="flex flex-col mob:gap-4 tab:gap-6 desk:gap-8">
           <ChannelsCard
+            userAddress={userAddress}
+            userData={userData}
             creatorCommunity={creatorCommunityData}
             setLoading={setLoading}
           />

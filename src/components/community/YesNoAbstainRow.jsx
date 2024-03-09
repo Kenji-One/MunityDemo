@@ -1,9 +1,19 @@
-/* eslint-disable import/no-anonymous-default-export */
-
 import { Typography, Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
-export default ({ checked, amount, percent, type }) => {
+export default function YesNoAbstainRow({ checked, amount, percent, type }) {
+  // Helper function to format numbers with K for thousands, M for millions
+  const formatNumber = (num) => {
+    // Round the number first to avoid floating-point issues
+    const roundedNum = Math.round(num);
+    if (roundedNum >= 1000000) {
+      return (roundedNum / 1000000).toFixed(1) + "M";
+    } else if (roundedNum >= 1000) {
+      return (roundedNum / 1000).toFixed(1) + "K";
+    } else {
+      return roundedNum.toString();
+    }
+  };
   return (
     <Box
       sx={{
@@ -20,7 +30,7 @@ export default ({ checked, amount, percent, type }) => {
           position: "absolute",
           inset: "0",
           backgroundColor: "rgba(24, 119, 169, 0.10)",
-          width: percent,
+          width: percent + "%",
         }}
       />
       <Box className="flex items-center gap-[6px]">
@@ -45,7 +55,7 @@ export default ({ checked, amount, percent, type }) => {
           ml={checked ? 1 : 0}
           lineHeight={"120%"}
         >
-          {amount}
+          {formatNumber(amount)}
         </Typography>
       </Box>
       <Typography
@@ -57,8 +67,8 @@ export default ({ checked, amount, percent, type }) => {
           color: "primary.main",
         }}
       >
-        {percent}
+        {percent}%
       </Typography>
     </Box>
   );
-};
+}

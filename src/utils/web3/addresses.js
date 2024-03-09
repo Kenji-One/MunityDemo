@@ -1,7 +1,6 @@
 import { munityABI } from "../abis/erc1155Munity";
 import { ChainIds } from "./chains";
-
-export const IS_TEST_MODE = true
+export const IS_TEST_MODE = true;
 
 export const addresses = {
   [ChainIds.Ethereum]: {

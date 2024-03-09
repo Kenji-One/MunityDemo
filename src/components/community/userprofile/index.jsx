@@ -65,26 +65,27 @@ export default function UserProfile({
   userCommunityBalance,
   communityDatabase,
   handleOpenBuyForm,
+  areNFTs,
+  isCreatorOfThisCommunity,
+  creatorData,
+  setLoading,
 }) {
   const router = useRouter();
   const matches = useMediaQuery("(min-width:1024px)");
   const { theme } = useSelector((state) => state.app);
   const { address, connected } = useWeb3Context();
   if (communityDatabase) {
-    console.log(
-      "Communitydatabase dfffffffffffffffffffhtrt:",
-      communityDatabase
-    );
+    console.log("Community data is loaded");
   } else {
     console.log("Community data is not loaded yet");
   }
   const joinedDate = communityDatabase.createdAt
     ? formatDate(communityDatabase.createdAt)
     : formatDate(new Date());
-  const isCreatorOfThisCommunity =
-    connected &&
-    communityDataContract &&
-    address.toLowerCase() === communityDataContract.by.toLowerCase();
+  // const isCreatorOfThisCommunity =
+  //   connected &&
+  //   communityDataContract &&
+  //   address.toLowerCase() === communityDataContract.by.toLowerCase();
   console.log("community data contract:", communityDataContract);
   return (
     <Box
@@ -200,13 +201,13 @@ export default function UserProfile({
             >
               By
               <Typography
-                className="cursor-pointer"
+                className="cursor-pointer break-all"
                 fontWeight={"300"}
                 color="#1877A9"
-                onClick={() => router.push("/profile")}
+                onClick={() => router.push(`/profile/${creatorData._id}`)}
                 sx={{ lineHeight: "120%" }}
               >
-                {communityDataContract.by}
+                {creatorData.username}
               </Typography>
               <VerifiedIcon
                 sx={{
@@ -370,6 +371,8 @@ export default function UserProfile({
         userCommunityBalance={userCommunityBalance}
         communityDataContract={communityDataContract}
         handleOpenBuyForm={handleOpenBuyForm}
+        areNFTs={areNFTs}
+        setLoading={setLoading}
       />
     </Box>
   );

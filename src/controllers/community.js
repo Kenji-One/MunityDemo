@@ -182,11 +182,22 @@ export async function updateFeature(req, res) {
 
     // Update the feature's active status and URL if provided
 
-    if (fields.isActive !== undefined) {
-      community[fields.featureKey].is_active = fields.isActive;
+    if (fields.is_active !== undefined) {
+      community[fields.featureKey].is_active = fields.is_active;
     }
+
     if (fields.url !== undefined) {
       community[fields.featureKey].url = fields.url;
+    }
+    // console.log("Fields:", fields);
+    if (fields.shopify_storefront_url !== undefined) {
+      community[fields.featureKey].shopify_storefront_url =
+        fields.shopify_storefront_url;
+    }
+
+    if (fields.shopify_access_token !== undefined) {
+      community[fields.featureKey].shopify_access_token =
+        fields.shopify_access_token;
     }
 
     await community.save();

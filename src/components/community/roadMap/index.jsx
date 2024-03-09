@@ -7,7 +7,7 @@ export default function RoadMap(props) {
   const { roadContent, areNFTs } = props;
 
   return (
-    <Box className={`${!areNFTs ? "blur-[10px] pb-4" : ""}`}>
+    <Box className={`${!areNFTs ? "blur-[10px] pb-4 min-h-[972px]" : ""}`}>
       <LoadmoreShowLess
         classNames={`grid grid-cols-1`}
         nav={"roads"}
