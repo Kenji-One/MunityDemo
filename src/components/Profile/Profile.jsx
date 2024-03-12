@@ -4,8 +4,8 @@ import { addressEllipsis } from "@/utils";
 import { Box, Typography, Link } from "@mui/material";
 import Card from "../Card";
 import SingleDetail from "./SingleDetail";
-import { Twitter } from "@mui/icons-material";
-import TelegramIcon from "@mui/icons-material/Telegram";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import InstagramIcon from "@mui/icons-material/Instagram";
 // import useMediaQuery from "@mui/material/useMediaQuery";
 import FormHeading from "../settings/Community/NFTCreation/FormHeading";
 import SingleCommunity from "../Card/SingleCommunity";
@@ -45,20 +45,22 @@ export default function Profile({ userData, userCommunities }) {
           </defs>
         </svg>
       ),
-      link: "https://discord.com/invite/",
+      link: userData.socials?.discord,
     },
     {
       label: "instagram",
       icon: (
-        <TelegramIcon color="primary" sx={{ width: "20px", height: "20px" }} />
+        <InstagramIcon color="primary" sx={{ width: "20px", height: "20px" }} />
       ),
-      link: "https://instagram.com/",
+      link: userData.socials?.instagram,
     },
 
     {
-      label: "twitter",
-      icon: <Twitter color="primary" sx={{ width: "20px", height: "20px" }} />,
-      link: "https://twitter.com/",
+      label: "youtube",
+      icon: (
+        <YouTubeIcon color="primary" sx={{ width: "20px", height: "20px" }} />
+      ),
+      link: userData.socials?.youtube,
     },
   ];
 
@@ -176,41 +178,44 @@ export default function Profile({ userData, userCommunities }) {
           </Box>
         </Box>
         <Box className="flex items-center justify-center gap-4 flex-wrap mb-8 lap:ml-auto">
-          {socials.map(({ label, icon, link }) => (
-            <Card
-              classNames="py-3 mob:px-0 mob:w-full tab:w-auto tab:px-6 cursor-pointer"
-              addSX={{
-                "&:hover": { backgroundColor: "primary.border" },
-                transition: "all 200ms",
-              }}
-              key={label}
-            >
-              <Link
-                href={link}
-                underline="none"
-                sx={{
-                  width: "100%", // This makes each link take the full width of the Card
-                  textAlign: "center", // This centers the text inside the Link
-                  color: "text.primary",
-                  "& svg": { width: "20px", height: "20px" },
-                }}
-                className="flex items-center justify-center gap-[8px]"
-              >
-                {icon}
-                <Typography
-                  sx={{
-                    fontSize: "16.5px",
-                    lineHeight: "120%",
-                    fontWeight: "400 !important",
-                    color: "text.primary",
-                    textTransform: "capitalize",
+          {socials.map(
+            ({ label, icon, link }) =>
+              link !== "" && (
+                <Card
+                  classNames="py-3 mob:px-0 mob:w-full tab:w-auto tab:px-6 cursor-pointer"
+                  addSX={{
+                    "&:hover": { backgroundColor: "primary.border" },
+                    transition: "all 200ms",
                   }}
+                  key={label}
                 >
-                  {label}
-                </Typography>
-              </Link>
-            </Card>
-          ))}
+                  <Link
+                    href={link}
+                    underline="none"
+                    sx={{
+                      width: "100%", // This makes each link take the full width of the Card
+                      textAlign: "center", // This centers the text inside the Link
+                      color: "text.primary",
+                      "& svg": { width: "20px", height: "20px" },
+                    }}
+                    className="flex items-center justify-center gap-[8px]"
+                  >
+                    {icon}
+                    <Typography
+                      sx={{
+                        fontSize: "16.5px",
+                        lineHeight: "120%",
+                        fontWeight: "400 !important",
+                        color: "text.primary",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {label}
+                    </Typography>
+                  </Link>
+                </Card>
+              )
+          )}
         </Box>
       </Box>
       <Box className="grid mob:grid-cols-1 lap:grid-cols-2 gap-8 mt-[52px]">
