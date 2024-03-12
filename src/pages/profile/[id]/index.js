@@ -7,8 +7,11 @@ import Profile from "@/components/Profile/Profile";
 import Loader from "@/utils/Loader";
 import { useWeb3Context } from "@/utils";
 export default function ProfilePage() {
-  const { addressCommunitiesData, addressCommunitiesDataLoading } =
-    useWeb3Context();
+  const {
+    addressCommunitiesData,
+    addressCommunitiesDataLoading,
+    getUserTotalCommunitiesRegistered,
+  } = useWeb3Context();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState([]);
   const [communities, setCommunities] = useState([]);
@@ -20,56 +23,26 @@ export default function ProfilePage() {
   );
   useEffect(() => {
     // console.log("user id from router:", id);
-    // const fetchUserData = async () => {
-    //   try {
-    //     const response = await fetch(`/api/users/${id}`);
-    //     const data = await response.json();
-    //     if (!data.success) router.push("/main");
-    //     console.log("user was Found");
-    //     setUserData(data.data);
-    //   } catch (error) {
-    //     console.error("Failed to fetch user data:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // const getCommunityByUserAddress = async (userId) => {
-    //   try {
-    //     const response = await fetch(`/api/communities?userId=${userId}`);
-    //     if (!response.ok) {
-    //       console.log("user does not have any community");
-    //       // return "user does not have any community";
-    //     }
-    //     const data = await response.json();
-    //     if (data.success && data.data) {
-    //       console.log("current user's community was found:", data);
-    //       setCommunities([data.data]);
-    //     } else {
-    //       console.error("Error fetching community:", data.error);
-    //     }
-    //   } catch (error) {
-    //     console.error(error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // // if (!id) {
-    // //   console.log("You can't access this page without id");
-    // //   // If the id is not declared, redirect to the main page
-    // //   router.push("/main");
-    // // } else {
-    // //   fetchUserData();
-    // //   getCommunityByUserAddress(id);
-    // //   console.log("this is single page of:", id);
-    // // }
-    // if (id) {
-    //   fetchUserData();
-    //   getCommunityByUserAddress(id);
-    //   // console.log("this is single page of:", id);
-    // }
-    setCommunities(addressCommunitiesData);
-    setLoading(addressCommunitiesDataLoading);
-  }, [addressCommunitiesData, addressCommunitiesDataLoading]);
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`/api/users/${id}`);
+        const data = await response.json();
+        if (!data.success) router.push("/main");
+        console.log("user was Found");
+        await getUserTotalCommunitiesRegistered(data.data.address);
+        setCommunities(addressCommunitiesData);
+
+        setUserData(data.data);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) {
+      fetchUserData();
+    }
+  }, [addressCommunitiesData, getUserTotalCommunitiesRegistered]);
   return (
     <Box className="relative overflow-hidden">
       <Loader open={loading} />
