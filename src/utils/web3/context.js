@@ -525,7 +525,10 @@ export const Web3ContextProvider = ({ children }) => {
     }
   };
 
-  const getUserTotalCommunitiesRegistered = async (userAddresses) => {
+  const getUserTotalCommunitiesRegistered = async (userAddresses,_chainId) => {
+    try {
+      
+    
     setAddressCommunitiesDataLoading(true);
     const contract = await getMunityContractToRead();
     if (contract) {
@@ -534,10 +537,10 @@ export const Web3ContextProvider = ({ children }) => {
       // console.log("eventFilter",eventFilter);
 
       // Get historical events
-      const events = await contract.queryFilter(eventFilter);
+      const events = await contract.queryFilter(eventFilter,MUNITY_CONFIG[_chainId]?.creationBlock);
       // console.log("events",events);
 
-      let allCommunityDaata = [];
+      let allCommunityData = [];
       for (let _id = 0; _id < events.length; _id++) {
         // console.log('All events:', events[_id]?.args[1]);
         const currentID = events[_id]?.args[1].toString();
@@ -547,20 +550,27 @@ export const Web3ContextProvider = ({ children }) => {
           communityData.chainId
         );
         communityData.joinedUsers = joinedUsers;
-        if (communityData) allCommunityDaata.push(communityData);
+        if (communityData) allCommunityData.push(communityData);
       }
 
-      // console.log("allCommunityDaata",allCommunityDaata);
-      setAddressCommunitiesData(allCommunityDaata);
+      // console.log("allCommunityData",allCommunityData);
+      setAddressCommunitiesData(allCommunityData);
       setAddressCommunitiesDataLoading(false);
 
-      return allCommunityDaata;
+      return allCommunityData;
     } else {
       setAddressCommunitiesData([]);
       setAddressCommunitiesDataLoading(false);
 
       return [];
     }
+  } catch (error) {
+    console.log(error.message);
+    setAddressCommunitiesData([]);
+    setAddressCommunitiesDataLoading(false);
+
+    return [];
+  }
   };
   const [allCommunitiesMainLoading, setAllCommunitiesMainLoading] =
     useState(false);
@@ -649,7 +659,7 @@ export const Web3ContextProvider = ({ children }) => {
       if (!name || !minting_price || !key_quantity || !description) {
         throw new Error("Provide other fields");
       }
-      discount = discount === 0 ? 1 : Number(discount) * 10;
+      discount = discount? Number(discount) * 10 : 0;
       minting_price = ethers.parseEther(minting_price.toString()).toString();
       const contract = await getMunityContract();
       if (!contract) {
@@ -705,7 +715,7 @@ export const Web3ContextProvider = ({ children }) => {
       // console.log("tx2:", tx);
       // Filter events
       const eventFilter = contract.filters.CommunityRegistered(address);
-      const events = await contract.queryFilter(eventFilter);
+      const events = await contract.queryFilter(eventFilter,MUNITY_CONFIG[chainId]?.creationBlock);
       // console.log("events",events);
       //last and the latest event of registration
       const registeredCommunityId =
@@ -1027,7 +1037,7 @@ export const Web3ContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (address !== "" && chainId !== "") {
-      getUserTotalCommunitiesRegistered(address);
+      getUserTotalCommunitiesRegistered(address,chainId);
     } else {
       setAddressCommunitiesData([]);
     }
@@ -1051,6 +1061,7 @@ export const Web3ContextProvider = ({ children }) => {
       connected,
       address,
       chainId,
+      addressCommunitiesDataLoading,
       // connect,
       // disconnect,
       // provider,

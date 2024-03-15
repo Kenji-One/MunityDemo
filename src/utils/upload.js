@@ -10,14 +10,14 @@ const fs = require("fs");
 const s3Client = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 // Helper function to delete an old image from S3
 export async function deleteFileFromS3(fileKey) {
   const deleteParams = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+    Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileKey,
   };
 
@@ -86,7 +86,7 @@ export async function uploadFileToS3(file, existingUrl = null) {
   // const buffer = Buffer.concat(chunks);
   // const fileContent = await fs.promises.readFile(file.filepath);
   const params = new PutObjectCommand({
-    Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+    Bucket: process.env.AWS_BUCKET_NAME,
     Key: newFileName,
     ACL: "public-read",
     ContentType: file.mimetype,
@@ -94,7 +94,7 @@ export async function uploadFileToS3(file, existingUrl = null) {
   });
 
   await s3Client.send(params);
-  return `https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.amazonaws.com/${newFileName}`;
+  return `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${newFileName}`;
 }
 
 // Example function to call a virus scanning service API

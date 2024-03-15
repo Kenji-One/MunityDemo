@@ -267,12 +267,12 @@ const NFTCreationFormSingle = ({
     setLoading(true);
     setnewDiscountChangeLoading(true);
     console.log("Submitted newDiscount:", newDiscount);
-    if (newDiscount == 0) {
-      alert("Discount % cant be zero");
-      setnewDiscountChangeLoading(false);
+    // if (newDiscount == 0) {
+    //   alert("Discount % cant be zero");
+    //   setnewDiscountChangeLoading(false);
 
-      return false;
-    }
+    //   return false;
+    // }
 
     if (newDiscount > 100) {
       alert("Discount % cant be greater than 100");

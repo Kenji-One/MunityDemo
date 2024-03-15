@@ -29,7 +29,7 @@ const App = ({ children }) => {
     <>
       <Head>
         <title>Munity</title>
-        <meta name="description" content="Built by Incubella" />
+        <meta name="description" content="Built by Ascended" />
         <link rel="icon" href="/logo.ico" />
       </Head>
       <ThemeProvider theme={theme}>

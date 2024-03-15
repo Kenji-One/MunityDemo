@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const {
     addressCommunitiesData,
     addressCommunitiesDataLoading,
+    chainId,
     getUserTotalCommunitiesRegistered,
   } = useWeb3Context();
   const [loading, setLoading] = useState(true);
@@ -29,7 +30,7 @@ export default function ProfilePage() {
         const data = await response.json();
         if (!data.success) router.push("/main");
         console.log("user was Found");
-        await getUserTotalCommunitiesRegistered(data.data.address);
+        await getUserTotalCommunitiesRegistered(data.data.address,chainId);
         setCommunities(addressCommunitiesData);
 
         setUserData(data.data);
@@ -39,10 +40,10 @@ export default function ProfilePage() {
         setLoading(false);
       }
     };
-    if (id) {
+    if (id && chainId!="") {
       fetchUserData();
     }
-  }, [addressCommunitiesData, getUserTotalCommunitiesRegistered]);
+  }, [addressCommunitiesData]);
   return (
     <Box className="relative overflow-hidden">
       <Loader open={loading} />

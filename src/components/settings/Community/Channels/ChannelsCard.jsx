@@ -57,7 +57,7 @@ export default function ChannelsCard({
     const sourceChatMembers = await fetchChatMembers(sourceChatId);
     // console.log("sourceChatMemberssaassssssssssssdas:", sourceChatMembers);
     const headers = new Headers({
-      "Project-ID": process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      "Project-ID": process.env.CHAT_ENGINE_PROJECT_ID,
       "User-Name": userData.username,
       "User-Secret": userAddress, // This should match the secret used in user creation
       "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export default function ChannelsCard({
     const chatEngineMembersEndpoint = `https://api.chatengine.io/chats/${chatId}/people/`;
 
     const headers = new Headers({
-      "Project-ID": process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      "Project-ID": process.env.CHAT_ENGINE_PROJECT_ID,
       "User-Name": userData.username,
       "User-Secret": userAddress,
     });
@@ -180,7 +180,7 @@ export default function ChannelsCard({
     const chatEngineEndpoint = `https://api.chatengine.io/chats/${chatId}/`;
 
     const headers = new Headers({
-      "Project-ID": process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID, // Your Project ID
+      "Project-ID": process.env.CHAT_ENGINE_PROJECT_ID, // Your Project ID
       "User-Name": userData.username,
       "User-Secret": userAddress, // This should match the secret used in user creation
     });

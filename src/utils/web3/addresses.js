@@ -1,10 +1,10 @@
+import { IS_TEST_MODE } from "@/context/RinbowkitWagmiContext";
 import { munityABI } from "../abis/erc1155Munity";
 import { ChainIds } from "./chains";
-export const IS_TEST_MODE = true;
 
 export const addresses = {
   [ChainIds.Ethereum]: {
-    name: "Ethereum Mainnet",
+    name: IS_TEST_MODE?"Sepolia Testnet":"Ethereum Mainnet",
     addresses: {
       DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
       USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -14,7 +14,7 @@ export const addresses = {
     },
   },
   [ChainIds.Polygon]: {
-    name: "Polygon Mainnet",
+    name: IS_TEST_MODE?"Mumbai Testnet":"Polygon Mainnet",
     addresses: {
       DAI: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
       USDC: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
@@ -27,21 +27,23 @@ export const addresses = {
 
 export const MUNITY_CONFIG = {
   [ChainIds.Ethereum]: {
-    rpcUrl: "https://sepolia.infura.io/v3/",
+    rpcUrl: IS_TEST_MODE?"https://sepolia.infura.io/v3/":"https://eth-mainnet.g.alchemy.com/v2/c_dvniV5eHFaVS8Oix4GDh-bJMKHDoL0",
     // address:"0x16a26E0cB9b8423F806672bf584F8de8bbC9eB96", //old
     // address:"0x888A2f8A786994868A27D442Ea559020D19ACfB4", //25 jan 1 pm
     // address:"0x599B5677EDc0484469343534239a7EA675e9abd4", //25 jan 4 pm
-    address: "0x2ca0c5AD64F6ad178798bC8Fcc33EA3ebf33eE28", //2 feb 6:30 pm //change uri
+    address: IS_TEST_MODE?"0x2ca0c5AD64F6ad178798bC8Fcc33EA3ebf33eE28":"", //TODO mainnte address
+    creationBlock:IS_TEST_MODE?0:0, //TODO block creation
     abi: munityABI,
-    name: "sepolia",
+    name: IS_TEST_MODE?"sepolia":"ethereum",
+
   },
   [ChainIds.Polygon]: {
-    rpcUrl:
-      "https://polygon-mumbai.g.alchemy.com/v2/SQJNaaxbCt0gWB9xXbeDxshDKj2NOqth",
+    rpcUrl:IS_TEST_MODE?"https://polygon-mumbai.g.alchemy.com/v2/SQJNaaxbCt0gWB9xXbeDxshDKj2NOqth":"https://polygon-mainnet.g.alchemy.com/v2/VZz_TWLjX4DCn7z09d0eKorGwTwZs9D7",
     // address:"0xc65e05B01167F2458944ecEfF28528209E8d588E", //26 jan 4:30 pm
-    address: "0x5224b9C833925fD6dc5f5Ec51CF6Ce347b39CB47", //2 feb 6:30 pm //change uri
+    address: IS_TEST_MODE?"0x5224b9C833925fD6dc5f5Ec51CF6Ce347b39CB47":"0xaF02eFB0a310FAd8C3Af3F01EB50EddF966908db", //2 feb 6:30 pm //change uri
+    creationBlock:IS_TEST_MODE?0:54646355,
     abi: munityABI,
-    name: "mumbai",
+    name: IS_TEST_MODE?"mumbai":"polygon",
   },
 };
 

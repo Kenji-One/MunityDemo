@@ -73,7 +73,7 @@ const SellItemForm = ({
 
   useEffect(() => {
     setCreds({
-      projectID: process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      projectID: process.env.CHAT_ENGINE_PROJECT_ID,
       userName: creatorData.username,
       userSecret: creatorData.address,
     });
@@ -173,7 +173,7 @@ const SellItemForm = ({
   const createChatEngineUser = async (userData) => {
     const usersEndpoint = "https://api.chatengine.io/users/";
     const headers = {
-      "PRIVATE-KEY": process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY,
+      "PRIVATE-KEY": process.env.CHAT_ENGINE_PRIVATE_KEY,
       "Content-Type": "application/json",
     };
 

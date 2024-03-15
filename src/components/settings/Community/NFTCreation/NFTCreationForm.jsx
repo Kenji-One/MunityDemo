@@ -44,7 +44,6 @@ const NFTCreationForm = ({
     setRegisterCommunityLoading,
     buyCommunityNft,
     addressCommunitiesData,
-    getUserTotalCommunitiesRegistered,
   } = useWeb3Context();
 
   const [hasCommunityCreated, setHasCommunityCreated] = useState(
@@ -210,7 +209,9 @@ const NFTCreationForm = ({
         setLoading(false);
       }
       await refetchData();
-      // await getUserTotalCommunitiesRegistered();
+    }else{
+    setLoading(true);
+
     }
   };
 

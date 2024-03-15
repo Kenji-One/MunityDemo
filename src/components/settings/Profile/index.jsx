@@ -124,10 +124,7 @@ export default function Profile({ userAddress, setLoading, userData }) {
     // Add username if you're updating it as well
     formData.append("username", username);
     var myHeaders = new Headers();
-    myHeaders.append(
-      "PRIVATE-KEY",
-      process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY
-    );
+    myHeaders.append("PRIVATE-KEY", process.env.CHAT_ENGINE_PRIVATE_KEY);
 
     const requestOptions = {
       method: "PATCH", // Or 'PUT' depending on the API requirements

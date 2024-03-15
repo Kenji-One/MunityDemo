@@ -1,30 +1,31 @@
+import { IS_TEST_MODE } from "@/context/RinbowkitWagmiContext";
 import * as assets from "../../../public";
 
 export const ChainIds = {
-  Ethereum: 11155111,
-  Polygon: 80001,
+  Ethereum: IS_TEST_MODE ? 11155111 : 1,
+  Polygon: IS_TEST_MODE ? 80001 : 137,
 };
 
 export const availableChains = {
   [ChainIds.Ethereum]: {
-    chainName: "Sepolia",
-    rpcUrls: ["https://sepolia.infura.io/v3/"],
+    chainName: IS_TEST_MODE?"Sepolia":"Ethereum",
+    rpcUrls: IS_TEST_MODE?["https://sepolia.infura.io/v3/"]:[""],
     decimals: 18,
-    chainHex: "0xaa36a7",
+    chainHex: IS_TEST_MODE?"0xaa36a7":"0x1",
     symbol: "ETH",
     icon: assets.tokens.ETH,
-    blockExplorerUrls: ["https://sepolia.etherscan.io/"],
+    blockExplorerUrls: IS_TEST_MODE?["https://sepolia.etherscan.io/"]:["https://etherscan.io/"],
   },
   [ChainIds.Polygon]: {
-    chainName: "Mumbai",
-    rpcUrls: [
+    chainName: IS_TEST_MODE?"Mumbai":"Polygon",
+    rpcUrls: IS_TEST_MODE?[
       "https://polygon-mumbai.g.alchemy.com/v2/SQJNaaxbCt0gWB9xXbeDxshDKj2NOqth",
-    ],
+    ]:[""],
     decimals: 18,
-    chainHex: "0x13881",
+    chainHex: IS_TEST_MODE?"0x13881":"0x89",
     symbol: "MATIC",
     icon: assets.tokens.MATIC,
-    blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+    blockExplorerUrls: IS_TEST_MODE?["https://mumbai.polygonscan.com/"]:["https://polygonscan.com/"],
   },
 };
 

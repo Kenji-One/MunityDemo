@@ -148,7 +148,7 @@ export default function SideBarContent({ userData, address }) {
   const [expanded, setExpanded] = useState(true);
   const [activeChat, setActiveChat] = useState(null);
   const creds = {
-    projectID: process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+    projectID: process.env.CHAT_ENGINE_PROJECT_ID,
     userName: userData.username,
     userSecret: address,
   };

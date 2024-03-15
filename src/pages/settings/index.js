@@ -41,7 +41,7 @@ export default function Settings() {
 
   const refetchData = async () => {
     if (chainId != "" && address != "") {
-      getUserTotalCommunitiesRegistered(address);
+      getUserTotalCommunitiesRegistered(address,chainId);
     }
   };
 
@@ -69,7 +69,7 @@ export default function Settings() {
     const usersEndpoint = "https://api.chatengine.io/users/";
 
     const headers = {
-      "PRIVATE-KEY": process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY,
+      "PRIVATE-KEY": process.env.CHAT_ENGINE_PRIVATE_KEY,
       "Content-Type": "application/json",
     };
     const modifiedUserData = {
@@ -119,7 +119,7 @@ export default function Settings() {
     const chatEngineEndpoint = "https://api.chatengine.io/chats/";
 
     const headers = new Headers({
-      "Project-ID": process.env.NEXT_PUBLIC_CHAT_ENGINE_PROJECT_ID,
+      "Project-ID": process.env.CHAT_ENGINE_PROJECT_ID,
       "User-Name": username,
       "User-Secret": address, // This should match the secret used in user creation
       "Content-Type": "application/json",

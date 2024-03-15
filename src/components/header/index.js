@@ -37,6 +37,7 @@ import {
   useChainModal,
 } from '@rainbow-me/rainbowkit';
 import { useDisconnect, useSwitchChain } from 'wagmi'
+import { IS_TEST_MODE } from "@/context/RinbowkitWagmiContext";
 
 export default function Header() {
 
@@ -66,7 +67,7 @@ export default function Header() {
 
       setSelectedChain(`${chainId}`)
     }else{
-      setSelectedChain(`${ChainIds.Ethereum}`)
+      setSelectedChain(`${IS_TEST_MODE? ChainIds.Ethereum : ChainIds.Polygon}`) //defai
 
     }
     

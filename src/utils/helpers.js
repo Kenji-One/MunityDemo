@@ -20,21 +20,21 @@ export const formatDate = (dateString) => {
 };
 
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
-console.log("process.env.AWS_REGION222:", process.env.AWS_REGION);
+// console.log("process.env.AWS_REGION222:", process.env.AWS_REGION);
 
 export async function uploadAvatarToChatEngine(s3Url, chatEngineUser) {
   // Initialize S3 client outside of the functions to reuse the instance
   const s3Client = new S3Client({
     region: process.env.NEXT_PUBLIC_AWS_REGION,
     credentials: {
-      accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     },
   });
   const match = s3Url.match(/https:\/\/([^\/]+)\.s3\.amazonaws\.com\/(.+)/);
   if (!match) throw new Error("Invalid S3 URL");
 
-  const Bucket = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+  const Bucket = process.env.AWS_BUCKET_NAME;
   const Key = s3Url.split("/").pop();
 
   // Download the file from S3
@@ -63,7 +63,7 @@ export async function uploadAvatarToChatEngine(s3Url, chatEngineUser) {
   const response = await fetch("https://api.chatengine.io/users/", {
     method: "POST",
     headers: {
-      "PRIVATE-KEY": process.env.NEXT_PUBLIC_CHAT_ENGINE_PRIVATE_KEY,
+      "PRIVATE-KEY": process.env.CHAT_ENGINE_PRIVATE_KEY,
     },
     body: form,
   });
